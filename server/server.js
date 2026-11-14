@@ -105,8 +105,7 @@ async function api(req,res){
  return reply(res,404,{error:'Unknown action'})
 }
 
-const server=http.createServer((req,res)=>{if(req.url.startsWith('/api/')){api(req,res).catch(()=>reply(res,500,{error:'Server error'}));return}res.writeHead(200,{'Content-Type':'text/plain'});res.end('Pixel Verse Games multiplayer and accounts server is running\n')});
-const wss=new WebSocket.Server({server});
+const server=http.createServer((req,res)=>{if(req.url.startsWith('/api/')){api(req,res).catch(()=>reply(res,500,{error:'Server error'}));return}res.writeHead(200,{'Content-Type':'text/html'});fs.createReadStream(path.join(__dirname,'../index.html')).pipe(res)
 const rooms=new Map();
 function send(ws,msg){if(ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify(msg))}
 function broadcast(room){const members=rooms.get(room);if(!members)return;const players=[...members].map(c=>({name:c.name,color:c.color,x:c.x,y:c.y}));for(const c of members)send(c,{type:'state',players})}
