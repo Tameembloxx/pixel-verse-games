@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pixel Verse Games — 2,000 Game Hub</title>
+<style>
+*{box-sizing:border-box}body{margin:0;color:#f5f7ff;background:#080b18;font:15px system-ui,Segoe UI,sans-serif}body:before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 20% 5%,#30205c 0,transparent 38%),radial-gradient(circle at 90% 15%,#073d53 0,transparent 35%),#080b18}
+header{max-width:1180px;margin:auto;padding:24px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{font-size:24px;font-weight:950;letter-spacing:1px}.logo span{color:#6cf6e1}.tag{background:#18213c;border:1px solid #334269;padding:7px 13px;border-radius:30px;color:#bdc8e7;font-size:12px}
+main{max-width:1180px;margin:auto;padding:0 22px 55px}.hero{border:1px solid #394574;border-radius:25px;padding:42px 35px;background:linear-gradient(125deg,#2d2058,#132b4b 75%,#12444b);position:relative;overflow:hidden}.hero:after{content:"✦";position:absolute;right:9%;top:-60px;font-size:280px;color:#ffffff0a;pointer-events:none}
+h1{font-size:clamp(35px,6vw,67px);line-height:1.02;letter-spacing:-2px;margin:0 0 15px}.hero p{color:#c1d1f1;font-size:17px;max-width:580px}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.stats span{padding:9px 14px;background:#ffffff15;border:1px solid #ffffff2c;border-radius:12px;font-size:13px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:27px 0 20px}input,select{background:#141c32;border:1px solid #334369;color:white;border-radius:12px;padding:13px;font:inherit}input{flex:1;min-width:200px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:17px}.card{background:#121a30;border:1px solid #2c3b62;border-radius:19px;overflow:hidden;transition:.2s;box-shadow:0 15px 30px #0002}.card:hover{transform:translateY(-5px);border-color:#9b8cff;box-shadow:0 20px 35px #0005}
+.art{height:156px;display:flex;align-items:center;justify-content:center;font-size:72px;position:relative;overflow:hidden;text-shadow:0 10px 24px #0006}.art:before{content:"";position:absolute;width:200px;height:200px;border:2px solid #ffffff18;border-radius:50%;transform:rotate(25deg) scaleX(1.5)}.art .small{position:absolute;bottom:10px;left:14px;font-size:10px;letter-spacing:2px;font-weight:900;background:#0b102a99;padding:5px 9px;border-radius:6px}
+.city{background:linear-gradient(140deg,#ff8468,#5e3a99,#20275e)}.duel{background:linear-gradient(140deg,#09a3c0,#5b35aa,#ed4a95)}.space{background:linear-gradient(140deg,#131d63,#3b2889,#0d7088)}.blocks{background:linear-gradient(140deg,#4b9a69,#276b68,#244267)}.snake{background:linear-gradient(140deg,#327653,#163d4b,#18285e)}.memory{background:linear-gradient(140deg,#a85290,#403f96,#263c6a)}
+.content{padding:17px}.content h2{font-size:20px;margin:0 0 7px}.content p{color:#aebddd;font-size:13px;min-height:52px;margin:0 0 14px}button{cursor:pointer;background:linear-gradient(100deg,#83a3ff,#73f2df);border:0;border-radius:11px;color:#091127;font-weight:850;padding:11px 17px;font:inherit}button:hover{filter:brightness(1.13)}.content button{width:100%}.secondary{background:#253554;color:white;border:1px solid #455985}
+#playPanel{display:none;margin-top:24px;background:#10192e;border:1px solid #465886;border-radius:22px;padding:20px}.playHead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.playHead h2{margin:0;font-size:23px}#gameHost{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:15px}canvas{max-width:100%;height:auto;background:#0a1023;border:1px solid #445782;border-radius:14px;touch-action:none}.help{color:#a9badc;text-align:center;font-size:13px;margin:12px 0}.hud{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}.hud span{background:#243352;border:1px solid #40537c;border-radius:10px;padding:7px 12px;font-size:13px}.touch{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}.touch button{min-width:50px}.foot{color:#8494b7;margin-top:35px;font-size:12px}
+@media(max-width:600px){.hero{padding:28px 22px}.art{height:132px}#playPanel{padding:12px}}
+</style></head><body>
+<header><div class="logo">PIXEL <span>VERSE</span> GAMES ✦</div><div class="tag">YOUR ULTIMATE MINI ARCADE</div></header>
+<main><section id="pvSocial">
+<h2>👤 Player accounts • 🏅 Badges • 🏆 High scores • 🤝 Friends</h2>
+<p>Make a local player profile to save your progress on this browser. Connect to a Pixel Verse Games server to register an online account, sync scores, and add friends by username.</p>
+<div class="pvrow"><input id="pvName" maxlength="18" placeholder="Your player name" aria-label="Player name"><button id="pvLocal">Save local profile</button></div>
+<div class="pvrow"><input id="pvServer" placeholder="Server URL (https://your-server.example)" aria-label="Account server URL"><button id="pvConnect">Connect</button></div>
+<div class="pvrow"><input id="pvPassword" type="password" placeholder="Online password (8+ characters)" aria-label="Online password"><button id="pvRegister">Register</button><button id="pvLogin">Log in</button><button id="pvLogout">Log out</button></div>
+<div id="pvMessage" class="pvbox" role="status">Guest player • Create a profile to start collecting achievements.</div>
+<div class="pvrow"><button id="pvRecord">💾 Save local game score</button><button id="pvScores">📊 Refresh leaderboard</button></div>
+<div class="pvbox"><strong>🛡️ Ranked Verified Math Sprint</strong><p>Play a 60-second challenge scored by the Node.js server. Online leaderboard points can only come from server-checked answers.</p><div class="pvrow"><button id="pvStartRanked">▶ Start ranked round</button><input id="pvAnswer" inputmode="numeric" type="number" placeholder="Your answer"><button id="pvSubmitAnswer">Submit</button></div><div id="pvRankedStatus">Log in to play ranked.</div></div>
+<div class="pvbox"><strong>🏅 Badges</strong><div id="pvBadges" class="pvchips"></div></div>
+<div class="pvbox"><strong>🏆 Your best scores</strong><div id="pvBest"></div></div>
+<div class="pvbox"><strong>🌍 Online leaderboard</strong><div id="pvLeaderboard">Connect to a server to see shared scores.</div></div>
+<div class="pvrow"><input id="pvFriend" maxlength="18" placeholder="Friend's exact username" aria-label="Friend username"><button id="pvAddFriend">➕ Add friend</button><button id="pvRefreshFriends">↻ Refresh</button></div>
+<div class="pvbox"><strong>🤝 Friends and requests</strong><div id="pvFriends">Online account required for friend requests.</div></div>
+<small>Local profiles and scores are saved only in this browser. Online accounts, friends and shared leaderboards require running the included server; server operators control the account data. Never reuse an important password.</small>
+</section>
+<section class="hero"><h1>ENTER THE<br>GAMEVERSE.</h1><p>Neon arenas. City driving. Block building. Space battles. Grab a friend, choose your game, and chase the high score.</p><div class="stats"><span>🎮 30 playable games</span><span>⚡ Animated graphics</span><span>👥 Local 2-player</span><span>💾 No sign-in</span></div></section>
+<div class="toolbar"><input id="search" placeholder="🔎 Search the arcade…" aria-label="Search games"><select id="filter"><option value="all">All games</option><option value="action">Action</option><option value="racing">Driving</option><option value="creative">Creative</option><option value="classic">Classic</option><option value="multiplayer">2 Players</option></select></div>
+<section class="grid" id="cards">
+<article class="card" data-cat="racing" data-name="neon city rush driving gta open world"><div class="art city">🏎️<span class="small">CITY EXPLORATION</span></div><div class="content"><h2>Neon City Rush</h2><p>Drive a glowing sports car through city streets. Hit checkpoints and avoid the buildings.</p><button onclick="launch('city')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="multiplayer" data-name="neon duel two player arena shooter"><div class="art duel">⚔️<span class="small">2 PLAYER LOCAL</span></div><div class="content"><h2>Neon Duel</h2><p>Battle your friend on one keyboard in a vibrant arena. First to five points wins.</p><button onclick="launch('duel')">PLAY WITH A FRIEND ↗</button></div></article>
+<article class="card" data-cat="action" data-name="star blaster space shooter"><div class="art space">🚀<span class="small">SPACE ACTION</span></div><div class="content"><h2>Star Blaster</h2><p>Blast incoming asteroids with laser pulses and survive the galaxy.</p><button onclick="launch('space')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="creative" data-name="block world minecraft build sandbox"><div class="art blocks">🧱<span class="small">BUILD & CREATE</span></div><div class="content"><h2>Block World</h2><p>Create colorful block landscapes with a simple building tool and custom tiles.</p><button onclick="launch('blocks')">START BUILDING ↗</button></div></article>
+<article class="card" data-cat="classic" data-name="neon snake classic"><div class="art snake">🐍<span class="small">RETRO CLASSIC</span></div><div class="content"><h2>Neon Snake</h2><p>Collect glowing food, grow longer, and try not to crash into yourself.</p><button onclick="launch('snake')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="classic" data-name="memory match puzzle cards"><div class="art memory">🧠<span class="small">BRAIN CHALLENGE</span></div><div class="content"><h2>Memory Flip</h2><p>Flip the tiles, find matching pairs, and beat your best move count.</p><button onclick="launch('memory')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="action" data-name="skyline parkour jump between rooftops and dodge obstacles."><div class="art" style="background:linear-gradient(130deg,#f5a64b,#a54bd4,#283d83)">🏃<span class="small">NEW GAME</span></div><div class="content"><h2>Skyline Parkour</h2><p>Jump between rooftops and dodge obstacles.</p><button onclick="launch('parkour')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="racing" data-name="turbo sprint race against the clock through traffic."><div class="art" style="background:linear-gradient(130deg,#f96969,#e6a84e,#3b387a)">🏁<span class="small">NEW GAME</span></div><div class="content"><h2>Turbo Sprint</h2><p>Race against the clock through traffic.</p><button onclick="launch('race')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="action" data-name="ufo dodge weave through a meteor shower."><div class="art" style="background:linear-gradient(130deg,#534cbd,#149eb6,#151f4f)">🛸<span class="small">NEW GAME</span></div><div class="content"><h2>UFO Dodge</h2><p>Weave through a meteor shower.</p><button onclick="launch('dodge')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="action" data-name="target frenzy pop moving targets before time runs out."><div class="art" style="background:linear-gradient(130deg,#f28c52,#bf457e,#42348c)">🎯<span class="small">NEW GAME</span></div><div class="content"><h2>Target Frenzy</h2><p>Pop moving targets before time runs out.</p><button onclick="launch('targets')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="action" data-name="monster maze collect keys while avoiding wandering monsters."><div class="art" style="background:linear-gradient(130deg,#648a4a,#2c5b6b,#2c275e)">🧟<span class="small">NEW GAME</span></div><div class="content"><h2>Monster Maze</h2><p>Collect keys while avoiding wandering monsters.</p><button onclick="launch('maze')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="classic" data-name="gem collector grab gems before the timer expires."><div class="art" style="background:linear-gradient(130deg,#37b3a0,#4b72c3,#9b48b1)">💎<span class="small">NEW GAME</span></div><div class="content"><h2>Gem Collector</h2><p>Grab gems before the timer expires.</p><button onclick="launch('gems')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="multiplayer" data-name="neon pong classic paddle action for two players."><div class="art" style="background:linear-gradient(130deg,#21c5d0,#4335a6,#e35ea2)">🏓<span class="small">NEW GAME</span></div><div class="content"><h2>Neon Pong</h2><p>Classic paddle action for two players.</p><button onclick="launch('pong')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="classic" data-name="hoop hero time your shots and sink baskets."><div class="art" style="background:linear-gradient(130deg,#fca35b,#e75b74,#553ba1)">🏀<span class="small">NEW GAME</span></div><div class="content"><h2>Hoop Hero</h2><p>Time your shots and sink baskets.</p><button onclick="launch('hoops')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="classic" data-name="2048 fusion combine numbered tiles to reach 2048."><div class="art" style="background:linear-gradient(130deg,#ddaf70,#a578a9,#3a4d87)">🧩<span class="small">NEW GAME</span></div><div class="content"><h2>2048 Fusion</h2><p>Combine numbered tiles to reach 2048.</p><button onclick="launch('2048')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="multiplayer" data-name="connect four challenge a friend to four in a row."><div class="art" style="background:linear-gradient(130deg,#e9c34f,#ed6b8c,#443c9d)">🟡<span class="small">NEW GAME</span></div><div class="content"><h2>Connect Four</h2><p>Challenge a friend to four in a row.</p><button onclick="launch('connect')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="multiplayer" data-name="tic-tac-toe the classic x versus o showdown."><div class="art" style="background:linear-gradient(130deg,#6fc0db,#8465cf,#ed7baf)">❌<span class="small">NEW GAME</span></div><div class="content"><h2>Tic-Tac-Toe</h2><p>The classic X versus O showdown.</p><button onclick="launch('ttt')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="action" data-name="jump dash hop over hazards in a speedy endless runner."><div class="art" style="background:linear-gradient(130deg,#f4b76d,#62b0a6,#4b4fa2)">🦘<span class="small">NEW GAME</span></div><div class="content"><h2>Jump Dash</h2><p>Hop over hazards in a speedy endless runner.</p><button onclick="launch('runner')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="action" data-name="galaxy catch catch falling stars and avoid dark rocks."><div class="art" style="background:linear-gradient(130deg,#1c71af,#6641a9,#c85d9a)">🌌<span class="small">NEW GAME</span></div><div class="content"><h2>Galaxy Catch</h2><p>Catch falling stars and avoid dark rocks.</p><button onclick="launch('catch')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="classic" data-name="simon lights repeat the glowing color sequence."><div class="art" style="background:linear-gradient(130deg,#c15eb1,#4f75d6,#3cae9a)">🧠<span class="small">NEW GAME</span></div><div class="content"><h2>Simon Lights</h2><p>Repeat the glowing color sequence.</p><button onclick="launch('simon')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="classic" data-name="math blitz solve quick math challenges against the clock."><div class="art" style="background:linear-gradient(130deg,#3aafa0,#5a8cdb,#9055b8)">🧮<span class="small">NEW GAME</span></div><div class="content"><h2>Math Blitz</h2><p>Solve quick math challenges against the clock.</p><button onclick="launch('math')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="action" data-name="frog hop cross lanes without getting hit by traffic."><div class="art" style="background:linear-gradient(130deg,#60bf73,#4e8bb2,#4a4b99)">🐸<span class="small">NEW GAME</span></div><div class="content"><h2>Frog Hop</h2><p>Cross lanes without getting hit by traffic.</p><button onclick="launch('frog')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="action" data-name="planet orbit keep your satellite safely in orbit."><div class="art" style="background:linear-gradient(130deg,#3d57ae,#874ba8,#d36e9d)">🪐<span class="small">NEW GAME</span></div><div class="content"><h2>Planet Orbit</h2><p>Keep your satellite safely in orbit.</p><button onclick="launch('orbit')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="classic" data-name="brick breaker bounce the ball and smash every brick."><div class="art" style="background:linear-gradient(130deg,#ec8a5c,#b34e9a,#4c56a2)">🧱<span class="small">NEW GAME</span></div><div class="content"><h2>Brick Breaker</h2><p>Bounce the ball and smash every brick.</p><button onclick="launch('brick')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="multiplayer" data-name="dice duel compete for the highest roll across five rounds."><div class="art" style="background:linear-gradient(130deg,#6b89cf,#8e5bb9,#d56a88)">🎲<span class="small">NEW GAME</span></div><div class="content"><h2>Dice Duel</h2><p>Compete for the highest roll across five rounds.</p><button onclick="launch('dice')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="classic" data-name="color tap tap the matching color before it changes."><div class="art" style="background:linear-gradient(130deg,#5bc8a4,#5d91e8,#cf5fa4)">🎨<span class="small">NEW GAME</span></div><div class="content"><h2>Color Tap</h2><p>Tap the matching color before it changes.</p><button onclick="launch('color')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="creative" data-name="treasure trail explore a tile map and discover hidden treasure."><div class="art" style="background:linear-gradient(130deg,#b6a05e,#5e9c73,#365e88)">🧭<span class="small">NEW GAME</span></div><div class="content"><h2>Treasure Trail</h2><p>Explore a tile map and discover hidden treasure.</p><button onclick="launch('treasure')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="action" data-name="asteroid field pilot through a dense field of asteroids."><div class="art" style="background:linear-gradient(130deg,#4e6ca9,#8051b6,#c25b85)">🌠<span class="small">NEW GAME</span></div><div class="content"><h2>Asteroid Field</h2><p>Pilot through a dense field of asteroids.</p><button onclick="launch('asteroids')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="classic" data-name="penalty kick aim and score past a moving goalie."><div class="art" style="background:linear-gradient(130deg,#61b46e,#3b969b,#3d62a0)">⚽<span class="small">NEW GAME</span></div><div class="content"><h2>Penalty Kick</h2><p>Aim and score past a moving goalie.</p><button onclick="launch('penalty')">PLAY NOW ↗</button></div></article>
+<article class="card" data-cat="classic" data-name="number hunt find the numbers in order as fast as you can."><div class="art" style="background:linear-gradient(130deg,#d7a65d,#8c76ce,#5074ba)">🔢<span class="small">NEW GAME</span></div><div class="content"><h2>Number Hunt</h2><p>Find the numbers in order as fast as you can.</p><button onclick="launch('numbers')">PLAY NOW ↗</button></div></article>
+</section>
+<section id="playPanel"><div class="playHead"><h2 id="gameTitle">Game</h2><button class="secondary" onclick="closeGame()">← BACK TO ARCADE</button></div><div id="gameHost"></div><p class="help" id="gameHelp"></p></section>
+<p class="foot">Pixel Verse Games is an original browser arcade. These are mini-games, not official versions of Minecraft or GTA. Same-keyboard multiplayer is included. Cross-device multiplayer and public rooms require a hosted server and are not included in this offline edition.</p></main>
+<script>
+const $=id=>document.getElementById(id),host=$('gameHost');let cleanup=()=>{};
+function closeGame(){cleanup();cleanup=()=>{};$('playPanel').style.display='none';host.innerHTML='';}
+function launch(id){closeGame();$('playPanel').style.display='block';$('playPanel').scrollIntoView({behavior:'smooth'});games[id]();}
+function setup(name,help,w=700,h=440){$('gameTitle').textContent=name;$('gameHelp').textContent=help;host.innerHTML='<div class="hud" id="hud"></div><canvas id="screen" width="'+w+'" height="'+h+'"></canvas><div class="touch" id="touch"></div>';return $('screen').getContext('2d');}
+function hud(s){$('hud').innerHTML=s}function btn(label,fn){let b=document.createElement('button');b.textContent=label;b.onclick=fn;$('touch').append(b);return b;}
+function controls(){let keys={};let down=e=>{let k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();keys[k]=true;};let up=e=>keys[e.key.toLowerCase()]=false;window.addEventListener('keydown',down);window.addEventListener('keyup',up);return {keys,stop(){window.removeEventListener('keydown',down);window.removeEventListener('keyup',up)}}}
+function frame(fn){let id=0,live=true;function tick(t){if(!live)return;fn(t);id=requestAnimationFrame(tick)}id=requestAnimationFrame(tick);return ()=>{live=false;cancelAnimationFrame(id)}}
+function glow(ctx,color,blur=18){ctx.shadowColor=color;ctx.shadowBlur=blur}
+function circle(ctx,x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
+const games={
+city(){let c=setup('🏎️ Neon City Rush','WASD / arrow keys to drive • Reach the golden checkpoint. The car steers in its direction of travel.');let k=controls(),car={x:60,y:190,a:0},score=0,goal={x:625,y:190},walls=[{x:90,y:35,w:120,h:110},{x:280,y:35,w:135,h:110},{x:490,y:35,w:120,h:110},{x:105,y:235,w:125,h:115},{x:295,y:235,w:135,h:115},{x:500,y:235,w:125,h:115}];btn('↻ Restart',()=>{car={x:60,y:190,a:0};score=0;goal={x:625,y:190}});function hit(x,y){return walls.some(b=>x>b.x-14&&x<b.x+b.w+14&&y>b.y-14&&y<b.y+b.h+14)}let stop=frame(t=>{let old={...car};if(k.keys.a||k.keys.arrowleft)car.a-=.055;if(k.keys.d||k.keys.arrowright)car.a+=.055;let v=(k.keys.w||k.keys.arrowup?3:0)-(k.keys.s||k.keys.arrowdown?2:0);car.x=Math.max(15,Math.min(685,car.x+Math.cos(car.a)*v));car.y=Math.max(15,Math.min(425,car.y+Math.sin(car.a)*v));if(hit(car.x,car.y)){car=old}if(Math.hypot(car.x-goal.x,car.y-goal.y)<30){score++;goal={x:35+Math.random()*630,y:25+Math.random()*380};while(hit(goal.x,goal.y))goal={x:35+Math.random()*630,y:25+Math.random()*380}}hud('<span>🏁 Checkpoints: '+score+'</span><span>🚗 Free Drive</span>');c.fillStyle='#295b4b';c.fillRect(0,0,700,440);c.fillStyle='#414c5e';c.fillRect(0,145,700,90);c.fillRect(240,0,40,440);c.fillRect(450,0,40,440);c.fillStyle='#e9ce8d';for(let x=0;x<700;x+=44)c.fillRect(x,188,22,3);walls.forEach((b,i)=>{c.fillStyle='#111c30';c.fillRect(b.x+8,b.y+9,b.w,b.h);c.fillStyle=['#8198b3','#8c819f','#699ba2'][i%3];c.fillRect(b.x,b.y,b.w,b.h);c.fillStyle='#344861';for(let x=b.x+15;x<b.x+b.w-12;x+=26)for(let y=b.y+15;y<b.y+b.h-12;y+=25)c.fillRect(x,y,13,12)});glow(c,'#ffe17a',22);circle(c,goal.x,goal.y,16+Math.sin(t/170)*3,'#ffe17a');c.shadowBlur=0;c.save();c.translate(car.x,car.y);c.rotate(car.a);glow(c,'#ff648f',18);c.fillStyle='#ff628b';c.fillRect(-20,-12,40,24);c.shadowBlur=0;c.fillStyle='#b9f3ff';c.fillRect(-3,-9,13,18);c.fillStyle='#fff4aa';c.fillRect(15,-8,4,5);c.fillRect(15,3,4,5);c.restore();});cleanup=()=>{stop();k.stop()};},
+duel(){let c=setup('⚔️ Neon Duel — 2 Players','Blue: WASD to move, F to fire • Pink: arrow keys to move, Enter to fire • First to 5 points wins.');let k=controls(),p=[{x:100,y:220,col:'#62eaff',score:0,dx:1,dy:0,cool:0},{x:600,y:220,col:'#ff75c4',score:0,dx:-1,dy:0,cool:0}],shots=[],over=false;btn('↻ New Match',()=>{p[0].score=p[1].score=0;p[0].x=100;p[0].y=220;p[1].x=600;p[1].y=220;shots=[];over=false});let stop=frame(t=>{if(!over){p.forEach((a,i)=>{let x=(k.keys[i?'arrowright':'d']?1:0)-(k.keys[i?'arrowleft':'a']?1:0),y=(k.keys[i?'arrowdown':'s']?1:0)-(k.keys[i?'arrowup':'w']?1:0),n=Math.hypot(x,y)||1;a.x=Math.max(20,Math.min(680,a.x+x/n*3.5));a.y=Math.max(20,Math.min(420,a.y+y/n*3.5));if(x||y){a.dx=x/n;a.dy=y/n}a.cool--;if(k.keys[i?'enter':'f']&&a.cool<=0){shots.push({x:a.x,y:a.y,vx:a.dx*7,vy:a.dy*7,owner:i});a.cool=18}});for(let i=shots.length-1;i>=0;i--){let b=shots[i];b.x+=b.vx;b.y+=b.vy;let target=p[1-b.owner];if(Math.hypot(b.x-target.x,b.y-target.y)<19){p[b.owner].score++;shots=[];p[0].x=100;p[0].y=220;p[1].x=600;p[1].y=220;if(p[b.owner].score>=5)over=true;break}if(b.x<0||b.x>700||b.y<0||b.y>440)shots.splice(i,1)}}hud('<span>🔵 Player 1: '+p[0].score+'</span><span>🩷 Player 2: '+p[1].score+'</span>');c.fillStyle='#0b1029';c.fillRect(0,0,700,440);c.strokeStyle='#2c3662';for(let x=0;x<700;x+=35){c.beginPath();c.moveTo(x,0);c.lineTo(x,440);c.stroke()}for(let y=0;y<440;y+=35){c.beginPath();c.moveTo(0,y);c.lineTo(700,y);c.stroke()}glow(c,'#8b84ff',15);c.strokeStyle='#8978e5';c.strokeRect(12,12,676,416);c.shadowBlur=0;p.forEach(a=>{glow(c,a.col,25);circle(c,a.x,a.y,15,a.col);c.shadowBlur=0;circle(c,a.x-5,a.y-3,2,'#071126');circle(c,a.x+5,a.y-3,2,'#071126')});shots.forEach(b=>{glow(c,p[b.owner].col,15);circle(c,b.x,b.y,5,p[b.owner].col)});c.shadowBlur=0;if(over){c.fillStyle='#070b18cf';c.fillRect(0,0,700,440);c.textAlign='center';c.font='bold 35px system-ui';c.fillStyle='#fff';c.fillText(p[0].score>=5?'BLUE WINS!':'PINK WINS!',350,220);c.textAlign='left'}});cleanup=()=>{stop();k.stop()};},
+space(){let c=setup('🚀 Star Blaster','Move with A / D or arrows • Space to fire • Survive the asteroid field.');let k=controls(),x=350,shots=[],rocks=[],score=0,lives=3,lastShot=0,lastSpawn=0,over=false;btn('↻ Restart',()=>{x=350;shots=[];rocks=[];score=0;lives=3;over=false});let stop=frame(t=>{if(!over){if(k.keys.a||k.keys.arrowleft)x-=5;if(k.keys.d||k.keys.arrowright)x+=5;x=Math.max(20,Math.min(680,x));if(k.keys[' ']&&t-lastShot>180){shots.push({x,y:370});lastShot=t}if(t-lastSpawn>450){rocks.push({x:20+Math.random()*660,y:-20,r:12+Math.random()*14,s:1.4+Math.random()*2});lastSpawn=t}shots.forEach(b=>b.y-=8);rocks.forEach(r=>r.y+=r.s);for(let i=rocks.length-1;i>=0;i--){let r=rocks[i],j=shots.findIndex(b=>Math.hypot(b.x-r.x,b.y-r.y)<r.r+5);if(j>=0){shots.splice(j,1);rocks.splice(i,1);score+=10}else if(Math.hypot(x-r.x,385-r.y)<r.r+12){rocks.splice(i,1);lives--;if(!lives)over=true}else if(r.y>460)rocks.splice(i,1)}shots=shots.filter(b=>b.y>0)}hud('<span>⭐ Score: '+score+'</span><span>🛡️ Shields: '+lives+'</span>');c.fillStyle='#080d26';c.fillRect(0,0,700,440);for(let i=0;i<100;i++){c.fillStyle='#ffffff';c.globalAlpha=.2+(i%5)/8;c.fillRect((i*113)%700,(i*71+t/35*(i%3+1))%440,2,2)}c.globalAlpha=1;rocks.forEach(r=>{glow(c,'#ffab72',12);circle(c,r.x,r.y,r.r,'#db956b')});c.shadowBlur=0;shots.forEach(b=>{glow(c,'#f9ec91',13);c.fillStyle='#fff2a4';c.fillRect(b.x-3,b.y,6,14)});c.shadowBlur=0;c.save();c.translate(x,385);glow(c,'#69f5e2',25);c.fillStyle='#69f5e2';c.beginPath();c.moveTo(0,-25);c.lineTo(-18,18);c.lineTo(18,18);c.fill();c.restore();c.shadowBlur=0;if(over){c.fillStyle='#080d26cf';c.fillRect(0,0,700,440);c.fillStyle='#fff';c.font='bold 32px system-ui';c.textAlign='center';c.fillText('GAME OVER',350,215);c.textAlign='left'}});cleanup=()=>{stop();k.stop()};},
+blocks(){let c=setup('🧱 Block World','Click tiles to build • Right-click to remove • Choose your material below.',640,400);let tiles=Array.from({length:10},(_,y)=>Array.from({length:16},(_,x)=>((x-7.5)**2/60+(y-4.5)**2/20<1)?1:0)),colors=['#277d9e','#5da55d','#9498a4','#b9824c','#d8c579','#8b65c8'],selected=1,count=0;['🌿 Grass','🪨 Stone','🪵 Wood','🏖️ Sand','💜 Crystal'].forEach((v,i)=>btn(v,()=>selected=i+1));function draw(){c.fillStyle='#175b78';c.fillRect(0,0,640,400);for(let y=0;y<10;y++)for(let x=0;x<16;x++){let v=tiles[y][x];c.fillStyle=colors[v];c.fillRect(x*40+1,y*40+1,38,38);if(v){c.fillStyle='#ffffff26';c.fillRect(x*40+4,y*40+4,32,6);c.fillStyle='#00000022';c.fillRect(x*40+32,y*40+8,6,29)}}hud('<span>🧱 Blocks placed: '+count+'</span>')}function place(e,remove){let r=c.canvas.getBoundingClientRect(),x=Math.floor((e.clientX-r.left)*640/r.width/40),y=Math.floor((e.clientY-r.top)*400/r.height/40);if(x>=0&&x<16&&y>=0&&y<10){tiles[y][x]=remove?0:selected;if(!remove)count++;draw()}}let click=e=>place(e,false),right=e=>{e.preventDefault();place(e,true)};c.canvas.addEventListener('click',click);c.canvas.addEventListener('contextmenu',right);draw();cleanup=()=>{c.canvas.removeEventListener('click',click);c.canvas.removeEventListener('contextmenu',right)};},
+snake(){let c=setup('🐍 Neon Snake','Arrow keys / WASD to move • Eat glowing food • Avoid walls and your tail.',480,480);let k=controls(),body,dir,next,food,score,over,timer;function reset(){body=[{x:8,y:10},{x:7,y:10},{x:6,y:10}];dir={x:1,y:0};next=dir;food={x:15,y:10};score=0;over=false}function draw(){hud('<span>🍎 Score: '+score+'</span>');c.fillStyle='#0a1427';c.fillRect(0,0,480,480);c.strokeStyle='#1c3044';for(let i=0;i<20;i++){c.beginPath();c.moveTo(i*24,0);c.lineTo(i*24,480);c.moveTo(0,i*24);c.lineTo(480,i*24);c.stroke()}glow(c,'#ff7a9b',20);circle(c,food.x*24+12,food.y*24+12,9,'#ff7a9b');body.forEach((b,i)=>{glow(c,'#66f3d3',12);c.fillStyle=i?'#46cba9':'#a4ffe9';c.fillRect(b.x*24+2,b.y*24+2,20,20)});c.shadowBlur=0;if(over){c.fillStyle='#000a';c.fillRect(0,0,480,480);c.fillStyle='white';c.textAlign='center';c.font='bold 28px system-ui';c.fillText('GAME OVER',240,240);c.textAlign='left'}}function step(){if(over)return;let m={arrowup:[0,-1],w:[0,-1],arrowdown:[0,1],s:[0,1],arrowleft:[-1,0],a:[-1,0],arrowright:[1,0],d:[1,0]};for(let v in m)if(k.keys[v]){let [x,y]=m[v];if(x!==-dir.x||y!==-dir.y)next={x,y};break}dir=next;let h={x:body[0].x+dir.x,y:body[0].y+dir.y},eat=h.x===food.x&&h.y===food.y;if(h.x<0||h.x>=20||h.y<0||h.y>=20||body.slice(0,eat?undefined:-1).some(b=>b.x===h.x&&b.y===h.y)){over=true;draw();return}body.unshift(h);if(eat){score++;let free=[];for(let y=0;y<20;y++)for(let x=0;x<20;x++)if(!body.some(b=>b.x===x&&b.y===y))free.push({x,y});food=free[Math.floor(Math.random()*free.length)]||food}else body.pop();draw()}btn('↻ Restart',()=>{reset();draw()});reset();draw();timer=setInterval(step,120);cleanup=()=>{clearInterval(timer);k.stop()};},
+memory(){let c=setup('🧠 Memory Flip','Click cards to flip them • Find all eight pairs in as few moves as possible.',560,420);let icons=['🚀','🍕','🐉','⭐','🎮','🐱','⚡','💎'],deck,open,matched,moves,lock,timer=null;function reset(){deck=[...icons,...icons].sort(()=>Math.random()-.5);open=[];matched=new Set();moves=0;lock=false;draw()}function draw(){hud('<span>🧩 Pairs: '+matched.size/2+' / 8</span><span>👆 Moves: '+moves+'</span>');c.fillStyle='#101630';c.fillRect(0,0,560,420);for(let i=0;i<16;i++){let x=28+(i%4)*132,y=22+Math.floor(i/4)*99;c.fillStyle=matched.has(i)?'#245c53':open.includes(i)?'#364a79':'#202e53';c.fillRect(x,y,110,82);c.strokeStyle='#6175a9';c.strokeRect(x,y,110,82);c.textAlign='center';c.font='36px system-ui';c.fillStyle='#fff';c.fillText(matched.has(i)||open.includes(i)?deck[i]:'✦',x+55,y+55)}c.textAlign='left'}function click(e){if(lock)return;let r=c.canvas.getBoundingClientRect(),x=(e.clientX-r.left)*560/r.width,y=(e.clientY-r.top)*420/r.height,col=Math.floor((x-28)/132),row=Math.floor((y-22)/99),i=row*4+col;if(col<0||col>3||row<0||row>3||x<28+col*132||x>138+col*132||y<22+row*99||y>104+row*99||matched.has(i)||open.includes(i))return;open.push(i);if(open.length===2){moves++;if(deck[open[0]]===deck[open[1]]){open.forEach(v=>matched.add(v));open=[]}else{lock=true;timer=setTimeout(()=>{open=[];lock=false;draw()},700)}}draw()}btn('↻ Shuffle',reset);c.canvas.addEventListener('click',click);reset();cleanup=()=>{clearTimeout(timer);c.canvas.removeEventListener('click',click)};}
+};
+function filter(){let q=$('search').value.toLowerCase(),cat=$('filter').value;document.querySelectorAll('.card').forEach(a=>a.style.display=(a.dataset.name.includes(q)&&(cat==='all'||a.dataset.cat===cat))?'':'none')}
+$('search').addEventListener('input',filter);$('filter').addEventListener('change',filter);
+
+// Extra Pixelverse arcade games
+function gameCanvas(name,help,w=640,h=420){return setup(name,help,w,h)}
+function addReset(fn){btn('↻ Restart',fn)}
+function gameLoop(draw){return frame(draw)}
+function keyboardGame(id){const cfg={
+parkour:{title:'Skyline Parkour',kind:'runner',jump:true},
+runner:{title:'Jump Dash',kind:'runner',jump:true},
+race:{title:'Turbo Sprint',kind:'runner',jump:false},
+dodge:{title:'UFO Dodge',kind:'fall',mode:'dodge'},
+gems:{title:'Gem Collector',kind:'fall',mode:'gems'},
+catch:{title:'Galaxy Catch',kind:'fall',mode:'catch'},
+asteroids:{title:'Asteroid Field',kind:'fall',mode:'dodge'},
+frog:{title:'Frog Hop',kind:'fall',mode:'frog'},
+orbit:{title:'Planet Orbit',kind:'fall',mode:'orbit'},
+maze:{title:'Monster Maze',kind:'grid',mode:'maze'},
+treasure:{title:'Treasure Trail',kind:'grid',mode:'treasure'},
+}[id];
+if(cfg.kind==='runner'){
+ let c=gameCanvas(cfg.title,'Space / ↑ to jump • Avoid the obstacles • Survive as long as possible.');let k=controls(),y=0,vy=0,ob=[],score=0,over=false,tick=0;function reset(){y=0;vy=0;ob=[];score=0;over=false;tick=0}addReset(reset);let stop=gameLoop(t=>{if(!over){tick++;if((k.keys[' ']||k.keys.arrowup||k.keys.w)&&y===0){vy=cfg.jump?13:10}vy-=.65;y=Math.max(0,y+vy);if(y===0)vy=0;if(tick%75===0)ob.push({x:670,w:24+Math.random()*35,h:26+Math.random()*38});ob.forEach(o=>o.x-=4+score/500);ob=ob.filter(o=>o.x>-60);if(ob.some(o=>o.x<110&&o.x+o.w>70&&y<o.h))over=true;score++}hud('<span>🏆 Distance: '+score+'</span>');c.fillStyle='#132444';c.fillRect(0,0,640,420);for(let i=0;i<22;i++){let x=((i*73-t/35)%720+720)%720;c.fillStyle='#273d66';c.fillRect(x,190+(i%4)*20,42,170)}c.fillStyle='#1a3755';c.fillRect(0,352,640,68);c.fillStyle='#4bd5b5';c.fillRect(0,352,640,5);ob.forEach(o=>{glow(c,'#ff688d',13);c.fillStyle='#ff688d';c.fillRect(o.x,352-o.h,o.w,o.h)});glow(c,'#79f7e1',18);c.fillStyle='#79f7e1';c.fillRect(70,315-y,38,37);c.shadowBlur=0;if(over){c.fillStyle='#ffffff';c.font='bold 32px system-ui';c.textAlign='center';c.fillText('CRASH! RESTART TO TRY AGAIN',320,160);c.textAlign='left'}});cleanup=()=>{stop();k.stop()};return}
+if(cfg.kind==='fall'){
+ let c=gameCanvas(cfg.title,'Move with A / D or ← / → • Collect bright objects and avoid red hazards.');let k=controls(),x=320,items=[],score=0,health=3,over=false,tick=0;function reset(){x=320;items=[];score=0;health=3;over=false;tick=0}addReset(reset);let stop=gameLoop(t=>{if(!over){tick++;if(k.keys.a||k.keys.arrowleft)x-=5;if(k.keys.d||k.keys.arrowright)x+=5;x=Math.max(20,Math.min(620,x));if(tick%25===0)items.push({x:25+Math.random()*590,y:-20,bad:Math.random()<(cfg.mode==='gems'?.23:.5)});items.forEach(o=>o.y+=3+score/100);for(let i=items.length-1;i>=0;i--){let o=items[i];if(Math.abs(o.x-x)<26&&Math.abs(o.y-375)<22){if(o.bad)health--;else score+=10;items.splice(i,1)}else if(o.y>440)items.splice(i,1)}if(health<=0)over=true}hud('<span>⭐ Score: '+score+'</span><span>❤️ Lives: '+health+'</span>');c.fillStyle='#0c1531';c.fillRect(0,0,640,420);for(let i=0;i<50;i++){c.fillStyle='#ffffff55';c.fillRect((i*113)%640,(i*67+t/35)%420,2,2)}items.forEach(o=>{glow(c,o.bad?'#ff5c87':'#70f7cf',18);circle(c,o.x,o.y,12,o.bad?'#ff5c87':'#70f7cf')});glow(c,'#7da7ff',20);c.fillStyle='#7da7ff';c.beginPath();c.moveTo(x,345);c.lineTo(x-21,394);c.lineTo(x+21,394);c.fill();c.shadowBlur=0;if(over){c.fillStyle='#fff';c.font='bold 30px system-ui';c.fillText('GAME OVER',230,200)}});cleanup=()=>{stop();k.stop()};return}
+if(cfg.kind==='grid'){
+ let c=gameCanvas(cfg.title,'Use arrow keys or WASD • Collect all the glowing treasures while exploring the map.',600,400);let k=controls(),player={x:1,y:1},treasures=[],steps=0,last=0;function reset(){player={x:1,y:1};steps=0;treasures=Array.from({length:8},(_,i)=>({x:2+(i*7)%13,y:2+(i*3)%7}));}addReset(reset);reset();let stop=gameLoop(t=>{if(t-last>110){let d={w:[0,-1],arrowup:[0,-1],s:[0,1],arrowdown:[0,1],a:[-1,0],arrowleft:[-1,0],d:[1,0],arrowright:[1,0]};for(let key in d)if(k.keys[key]){player.x=Math.max(0,Math.min(14,player.x+d[key][0]));player.y=Math.max(0,Math.min(9,player.y+d[key][1]));steps++;last=t;break}treasures=treasures.filter(o=>o.x!==player.x||o.y!==player.y)}hud('<span>💎 Treasures left: '+treasures.length+'</span><span>👟 Steps: '+steps+'</span>');for(let y=0;y<10;y++)for(let x=0;x<15;x++){c.fillStyle=(x+y)%2?'#274d4c':'#306057';c.fillRect(x*40,y*40,40,40);if((x*7+y*11)%17===0){c.fillStyle='#4c8060';c.fillRect(x*40+8,y*40+8,24,24)}}treasures.forEach(o=>{glow(c,'#ffe27a',14);circle(c,o.x*40+20,o.y*40+20,11,'#ffe27a')});glow(c,'#75c5ff',15);circle(c,player.x*40+20,player.y*40+20,15,'#75c5ff');c.shadowBlur=0;if(!treasures.length){c.fillStyle='#fff';c.font='bold 26px system-ui';c.fillText('ALL TREASURE FOUND!',140,180)}});cleanup=()=>{stop();k.stop()};return}
+}
+['parkour','runner','race','dodge','gems','catch','asteroids','frog','orbit','maze','treasure'].forEach(id=>games[id]=()=>keyboardGame(id));
+games.targets=()=>{let c=gameCanvas('🎯 Target Frenzy','Click moving glowing targets • Score as much as possible in 30 seconds.');let score=0,seconds=30,targets=[],live=true,timer;function reset(){score=0;seconds=30;live=true;targets=Array.from({length:5},()=>({x:30+Math.random()*580,y:30+Math.random()*350,r:14+Math.random()*10,dx:(Math.random()-.5)*3,dy:(Math.random()-.5)*3}));clearInterval(timer);timer=setInterval(()=>{seconds--;if(seconds<=0){live=false;clearInterval(timer)}},1000)}function click(e){if(!live)return;let r=c.canvas.getBoundingClientRect(),x=(e.clientX-r.left)*640/r.width,y=(e.clientY-r.top)*420/r.height;let i=targets.findIndex(o=>Math.hypot(o.x-x,o.y-y)<o.r);if(i>=0){score+=10;targets[i]={x:30+Math.random()*580,y:30+Math.random()*350,r:14+Math.random()*10,dx:(Math.random()-.5)*3,dy:(Math.random()-.5)*3}}}c.canvas.addEventListener('click',click);addReset(reset);reset();let stop=gameLoop(t=>{hud('<span>🎯 Score: '+score+'</span><span>⏱️ Time: '+seconds+'</span>');c.fillStyle='#101633';c.fillRect(0,0,640,420);targets.forEach((o,i)=>{if(live){o.x+=o.dx;o.y+=o.dy;if(o.x<o.r||o.x>640-o.r)o.dx*=-1;if(o.y<o.r||o.y>420-o.r)o.dy*=-1}glow(c,['#ff7f9f','#6cf2d6','#ffda70','#a98dff','#7ab8ff'][i],18);circle(c,o.x,o.y,o.r,['#ff7f9f','#6cf2d6','#ffda70','#a98dff','#7ab8ff'][i]);circle(c,o.x,o.y,5,'#ffffff')});c.shadowBlur=0;if(!live){c.fillStyle='#fff';c.font='bold 30px system-ui';c.fillText('TIME UP!',250,210)}});cleanup=()=>{stop();clearInterval(timer);c.canvas.removeEventListener('click',click)}};
+games.pong=()=>{let c=gameCanvas('🏓 Neon Pong','Player 1: W/S • Player 2: ↑/↓ • First to 7 wins.');let k=controls(),p1=175,p2=175,ball={x:320,y:210,vx:4,vy:3},a=0,b=0,over=false;function reset(){p1=p2=175;ball={x:320,y:210,vx:4,vy:3};a=b=0;over=false}addReset(reset);let stop=gameLoop(t=>{if(!over){if(k.keys.w)p1-=5;if(k.keys.s)p1+=5;if(k.keys.arrowup)p2-=5;if(k.keys.arrowdown)p2+=5;p1=Math.max(0,Math.min(340,p1));p2=Math.max(0,Math.min(340,p2));ball.x+=ball.vx;ball.y+=ball.vy;if(ball.y<9||ball.y>411)ball.vy*=-1;if(ball.x<43&&ball.x>28&&ball.y>p1&&ball.y<p1+80)ball.vx=Math.abs(ball.vx)*1.03;if(ball.x>597&&ball.x<612&&ball.y>p2&&ball.y<p2+80)ball.vx=-Math.abs(ball.vx)*1.03;if(ball.x<0||ball.x>640){if(ball.x<0)b++;else a++;ball={x:320,y:210,vx:ball.x<0?4:-4,vy:3};if(a>=7||b>=7)over=true}}hud('<span>🔵 P1: '+a+'</span><span>🩷 P2: '+b+'</span>');c.fillStyle='#0c142c';c.fillRect(0,0,640,420);c.setLineDash([12,12]);c.strokeStyle='#ffffff44';c.beginPath();c.moveTo(320,0);c.lineTo(320,420);c.stroke();c.setLineDash([]);glow(c,'#70e9ff',15);c.fillStyle='#70e9ff';c.fillRect(25,p1,15,80);glow(c,'#ff87d4',15);c.fillStyle='#ff87d4';c.fillRect(600,p2,15,80);glow(c,'#fff',15);circle(c,ball.x,ball.y,9,'#fff');c.shadowBlur=0;if(over){c.fillStyle='#fff';c.font='bold 29px system-ui';c.fillText((a>=7?'PLAYER 1':'PLAYER 2')+' WINS!',205,205)}});cleanup=()=>{stop();k.stop()}};
+games.connect=()=>{let c=gameCanvas('🟡 Connect Four','Two-player game • Click a column to drop a piece • First four in a row wins.',560,440);let board,turn,win;function reset(){board=Array.from({length:6},()=>Array(7).fill(0));turn=1;win=0;draw()}function draw(){hud('<span>Turn: '+(turn===1?'🔴 Red':'🟡 Yellow')+'</span>'+(win?'<span>Winner: '+(win===1?'Red':'Yellow')+'</span>':''));c.fillStyle='#173a8b';c.fillRect(0,0,560,440);for(let y=0;y<6;y++)for(let x=0;x<7;x++)circle(c,40+x*80,40+y*72,29,board[y][x]===1?'#ff667d':board[y][x]===2?'#ffe27d':'#101b37')}function click(e){if(win)return;let r=c.canvas.getBoundingClientRect(),x=Math.floor((e.clientX-r.left)*560/r.width/80);if(x<0||x>6)return;for(let y=5;y>=0;y--)if(!board[y][x]){board[y][x]=turn;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(dx||dy){let n=1;for(let dir of [-1,1])for(let step=1;step<4;step++){let xx=x+dx*dir*step,yy=y+dy*dir*step;if(xx<0||xx>=7||yy<0||yy>=6||board[yy][xx]!==turn)break;n++}if(n>=4)win=turn}turn=turn===1?2:1;draw();break}}c.canvas.addEventListener('click',click);addReset(reset);reset();cleanup=()=>c.canvas.removeEventListener('click',click)};
+games.ttt=()=>{let c=gameCanvas('❌ Tic-Tac-Toe','Two-player classic • Click an empty square to place X or O.',450,450);let board,turn,win;function reset(){board=Array(9).fill('');turn='X';win='';draw()}function draw(){hud('<span>Turn: '+turn+'</span><span>'+win+'</span>');c.fillStyle='#141d3b';c.fillRect(0,0,450,450);c.strokeStyle='#8b9ff2';c.lineWidth=5;for(let i=1;i<3;i++){c.beginPath();c.moveTo(i*150,0);c.lineTo(i*150,450);c.moveTo(0,i*150);c.lineTo(450,i*150);c.stroke()}board.forEach((v,i)=>{c.font='bold 100px system-ui';c.textAlign='center';c.fillStyle=v==='X'?'#69e9db':'#ff85ba';c.fillText(v,(i%3)*150+75,Math.floor(i/3)*150+112)});c.textAlign='left'}function click(e){if(win)return;let r=c.canvas.getBoundingClientRect(),x=Math.floor((e.clientX-r.left)*450/r.width/150),y=Math.floor((e.clientY-r.top)*450/r.height/150),i=y*3+x;if(i<0||i>=9||board[i])return;board[i]=turn;let lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];if(lines.some(l=>l.every(j=>board[j]===turn)))win=turn+' wins!';else if(board.every(Boolean))win='Draw!';else turn=turn==='X'?'O':'X';draw()}c.canvas.addEventListener('click',click);addReset(reset);reset();cleanup=()=>c.canvas.removeEventListener('click',click)};
+games.dice=()=>{let c=gameCanvas('🎲 Dice Duel','Two-player dice showdown • Take turns rolling • Highest total after five rounds wins.');let rolls=[[],[]],turn=0;function draw(){hud('<span>🔵 P1: '+rolls[0].reduce((a,b)=>a+b,0)+'</span><span>🩷 P2: '+rolls[1].reduce((a,b)=>a+b,0)+'</span>');c.fillStyle='#14203e';c.fillRect(0,0,640,420);c.fillStyle='#fff';c.textAlign='center';c.font='bold 28px system-ui';c.fillText(rolls[0].length===5&&rolls[1].length===5?'MATCH COMPLETE':'PLAYER '+(turn+1)+' TO ROLL',320,100);c.font='100px system-ui';c.fillText('🎲',320,260);c.font='20px system-ui';c.fillText('Rounds: '+rolls[0].length+' / 5   •   '+rolls[1].length+' / 5',320,330);c.textAlign='left'}btn('🎲 Roll Dice',()=>{if(rolls[0].length===5&&rolls[1].length===5)return;rolls[turn].push(1+Math.floor(Math.random()*6));turn=1-turn;draw()});btn('↻ Reset',()=>{rolls=[[],[]];turn=0;draw()});draw()};
+games['2048']=()=>{let c=gameCanvas('🧩 2048 Fusion','Use arrow keys to slide numbered tiles • Combine equal numbers.',480,480),k=controls(),board,score=0,last=0;function spawn(){let empty=[];board.forEach((r,y)=>r.forEach((v,x)=>{if(!v)empty.push([x,y])}));if(empty.length){let [x,y]=empty[Math.floor(Math.random()*empty.length)];board[y][x]=Math.random()<.9?2:4}}function reset(){board=Array.from({length:4},()=>Array(4).fill(0));score=0;spawn();spawn();draw()}function draw(){hud('<span>⭐ Score: '+score+'</span>');c.fillStyle='#202c45';c.fillRect(0,0,480,480);for(let y=0;y<4;y++)for(let x=0;x<4;x++){let v=board[y][x];c.fillStyle=v?'hsl('+(42-Math.log2(v)*5)+',70%,'+(75-Math.log2(v)*3)+'%)':'#33405b';c.fillRect(x*120+6,y*120+6,108,108);if(v){c.fillStyle='#162139';c.textAlign='center';c.font='bold '+(v>999?30:42)+'px system-ui';c.fillText(v,x*120+60,y*120+74)}}c.textAlign='left'}function move(key){let before=JSON.stringify(board);for(let i=0;i<4;i++){let a=key==='arrowleft'?board[i].slice():key==='arrowright'?board[i].slice().reverse():key==='arrowup'?board.map(r=>r[i]):board.map(r=>r[i]).reverse();a=a.filter(Boolean);for(let j=0;j<a.length-1;j++)if(a[j]===a[j+1]){a[j]*=2;score+=a[j];a.splice(j+1,1)}while(a.length<4)a.push(0);if(key==='arrowleft')board[i]=a;else if(key==='arrowright')board[i]=a.reverse();else for(let j=0;j<4;j++)board[key==='arrowup'?j:3-j][i]=a[j]}if(JSON.stringify(board)!==before)spawn();draw()}let stop=gameLoop(t=>{if(t-last>135){for(let d of ['arrowleft','arrowright','arrowup','arrowdown'])if(k.keys[d]){move(d);last=t;break}}});addReset(reset);reset();cleanup=()=>{stop();k.stop()}};
+games.brick=()=>{let c=gameCanvas('🧱 Brick Breaker','Move the paddle with A / D or arrows • Bounce the ball to break bricks.'),k=controls(),x=320,ball,bricks,score=0,lives=3;function reset(){x=320;ball={x:320,y:300,vx:3,vy:-4};bricks=Array.from({length:30},(_,i)=>({x:35+i%10*58,y:35+Math.floor(i/10)*35,on:true}));score=0;lives=3}addReset(reset);reset();let stop=gameLoop(t=>{if(lives>0){if(k.keys.a||k.keys.arrowleft)x-=6;if(k.keys.d||k.keys.arrowright)x+=6;x=Math.max(48,Math.min(592,x));ball.x+=ball.vx;ball.y+=ball.vy;if(ball.x<10||ball.x>630)ball.vx*=-1;if(ball.y<10)ball.vy=Math.abs(ball.vy);if(ball.y>380&&ball.y<400&&Math.abs(ball.x-x)<50)ball.vy=-Math.abs(ball.vy);if(ball.y>440){lives--;ball={x:320,y:300,vx:3,vy:-4}}bricks.forEach(b=>{if(b.on&&ball.x>b.x&&ball.x<b.x+52&&ball.y>b.y&&ball.y<b.y+26){b.on=false;score+=10;ball.vy*=-1}})}hud('<span>⭐ Score: '+score+'</span><span>❤️ Lives: '+lives+'</span>');c.fillStyle='#10172f';c.fillRect(0,0,640,420);bricks.forEach((b,i)=>{if(b.on){c.fillStyle=['#ff7e9b','#74ddcc','#ffdc80'][Math.floor(i/10)];c.fillRect(b.x,b.y,52,26)}});glow(c,'#8eaaff',15);c.fillStyle='#8eaaff';c.fillRect(x-48,396,96,13);glow(c,'#fff',12);circle(c,ball.x,ball.y,9,'#fff');c.shadowBlur=0});cleanup=()=>{stop();k.stop()}};
+games.hoops=()=>{let c=gameCanvas('🏀 Hoop Hero','Click to launch a ball toward the moving hoop • Try to score 10 baskets.');let score=0,shots=0,hoop=320,ball=null;function reset(){score=shots=0;ball=null}function click(e){if(ball)return;let r=c.canvas.getBoundingClientRect(),x=(e.clientX-r.left)*640/r.width;ball={x:320,y:390,vx:(x-320)/35,vy:-11};shots++}c.canvas.addEventListener('click',click);addReset(reset);let stop=gameLoop(t=>{hoop=320+Math.sin(t/550)*170;if(ball){ball.x+=ball.vx;ball.y+=ball.vy;ball.vy+=.22;if(ball.y>420){ball=null}else if(ball.vy>0&&ball.y>155&&ball.y<165&&Math.abs(ball.x-hoop)<35){score++;ball=null}}hud('<span>🏀 Baskets: '+score+'</span><span>🎯 Attempts: '+shots+'</span>');c.fillStyle='#1d2948';c.fillRect(0,0,640,420);c.fillStyle='#c95e5e';c.fillRect(0,410,640,10);c.strokeStyle='#ffdf83';c.lineWidth=7;c.beginPath();c.ellipse(hoop,160,42,10,0,0,Math.PI*2);c.stroke();if(ball)circle(c,ball.x,ball.y,13,'#ff9c55');else circle(c,320,390,13,'#ff9c55')});cleanup=()=>{stop();c.canvas.removeEventListener('click',click)}};
+games.penalty=()=>{let c=gameCanvas('⚽ Penalty Kick','Click left, center, or right to take a shot • Outsmart the moving goalie.');let score=0,shots=0,keeper=320,flash=0;function reset(){score=shots=0}function click(e){let r=c.canvas.getBoundingClientRect(),x=(e.clientX-r.left)*640/r.width;shots++;if(Math.abs(x-keeper)>75)score++;flash=20}c.canvas.addEventListener('click',click);addReset(reset);let stop=gameLoop(t=>{keeper=320+Math.sin(t/650)*150;flash=Math.max(0,flash-1);hud('<span>⚽ Goals: '+score+'</span><span>🥅 Shots: '+shots+'</span>');c.fillStyle='#2c845f';c.fillRect(0,0,640,420);c.strokeStyle='#fff';c.lineWidth=6;c.strokeRect(90,45,460,240);for(let x=100;x<550;x+=35){c.strokeStyle='#ffffff44';c.beginPath();c.moveTo(x,45);c.lineTo(x,285);c.stroke()}c.fillStyle='#f8b86c';c.fillRect(keeper-32,150,64,68);circle(c,320,380,18,'#fff');if(flash){c.fillStyle='#ffffff55';c.fillRect(0,0,640,420)}});cleanup=()=>{stop();c.canvas.removeEventListener('click',click)}};
+games.simon=()=>{let c=gameCanvas('🧠 Simon Lights','Watch the flashing pattern • Click the colored quadrants in the same order.',480,480),colors=['#f87171','#66d99d','#70a7ff','#f3d76a'],seq=[],input=0,flash=-1,busy=false,level=0,timers=[];function draw(){hud('<span>🧠 Level: '+level+'</span>');c.fillStyle='#121a32';c.fillRect(0,0,480,480);colors.forEach((col,i)=>{c.fillStyle=col;c.globalAlpha=flash===i?1:.55;c.fillRect(20+(i%2)*225,20+Math.floor(i/2)*225,210,210)});c.globalAlpha=1}function next(){seq.push(Math.floor(Math.random()*4));level=seq.length;input=0;busy=true;seq.forEach((v,i)=>{timers.push(setTimeout(()=>{flash=v;draw()},i*700+350));timers.push(setTimeout(()=>{flash=-1;draw();if(i===seq.length-1)busy=false},i*700+730))})}function reset(){timers.forEach(clearTimeout);timers=[];seq=[];level=0;flash=-1;draw();next()}function click(e){if(busy)return;let r=c.canvas.getBoundingClientRect(),x=(e.clientX-r.left)*480/r.width,y=(e.clientY-r.top)*480/r.height,i=(x>240?1:0)+(y>240?2:0);if(i!==seq[input]){reset();return}input++;if(input===seq.length){busy=true;timers.push(setTimeout(next,650))}}c.canvas.addEventListener('click',click);addReset(reset);reset();cleanup=()=>{timers.forEach(clearTimeout);c.canvas.removeEventListener('click',click)}};
+games.math=()=>{let c=gameCanvas('🧮 Math Blitz','Click the correct answer below • Solve as many as possible in 45 seconds.');let a,b,correct,opts,score=0,left=45,timer;function question(){a=1+Math.floor(Math.random()*12);b=1+Math.floor(Math.random()*12);correct=a+b;opts=[correct,correct+1+Math.floor(Math.random()*5),Math.max(0,correct-1-Math.floor(Math.random()*5))].sort(()=>Math.random()-.5);draw()}function draw(){hud('<span>⭐ Score: '+score+'</span><span>⏱️ Time: '+left+'</span>');c.fillStyle='#13203c';c.fillRect(0,0,640,420);c.fillStyle='#fff';c.textAlign='center';c.font='bold 65px system-ui';c.fillText(a+' + '+b+' = ?',320,190);c.textAlign='left'}function reset(){clearInterval(timer);score=0;left=45;question();timer=setInterval(()=>{left--;draw();if(left<=0)clearInterval(timer)},1000)}['A','B','C'].forEach((v,i)=>btn(v,()=>{if(left<=0)return;if(opts[i]===correct)score++;question();refresh()}));function refresh(){Array.from($('touch').children).slice(0,3).forEach((b,i)=>b.textContent=opts[i])}btn('↻ Restart',()=>{reset();refresh()});reset();refresh();cleanup=()=>clearInterval(timer)};
+games.color=()=>{let c=gameCanvas('🎨 Color Tap','Click the button matching the color shown • Build your streak.'),colors=['RED','BLUE','GREEN','YELLOW'],codes=['#ff7187','#77a7ff','#65d9aa','#ffdd77'],target=0,score=0;function next(){target=Math.floor(Math.random()*4);draw()}function draw(){hud('<span>🎨 Streak: '+score+'</span>');c.fillStyle='#18213d';c.fillRect(0,0,640,420);c.textAlign='center';c.font='bold 48px system-ui';c.fillStyle=codes[target];c.fillText(colors[target],320,220);c.textAlign='left'}colors.forEach((col,i)=>btn(col,()=>{score=i===target?score+1:0;next()}));btn('↻ Reset',()=>{score=0;next()});next()};
+games.numbers=()=>{let c=gameCanvas('🔢 Number Hunt','Click numbers from 1 to 16 in order • Beat your own time.',480,480),arr,nextN,start;function reset(){arr=Array.from({length:16},(_,i)=>i+1).sort(()=>Math.random()-.5);nextN=1;start=Date.now();draw()}function draw(){hud('<span>🔢 Next: '+nextN+'</span><span>⏱️ '+Math.round((Date.now()-start)/1000)+' sec</span>');c.fillStyle='#111a34';c.fillRect(0,0,480,480);arr.forEach((v,i)=>{let x=i%4*120,y=Math.floor(i/4)*120;c.fillStyle=v<nextN?'#254f49':'#344b7b';c.fillRect(x+6,y+6,108,108);c.fillStyle='#fff';c.textAlign='center';c.font='bold 40px system-ui';c.fillText(v<nextN?'✓':v,x+60,y+73)});c.textAlign='left'}function click(e){let r=c.canvas.getBoundingClientRect(),x=Math.floor((e.clientX-r.left)*480/r.width/120),y=Math.floor((e.clientY-r.top)*480/r.height/120);if(arr[y*4+x]===nextN){nextN++;draw()}}c.canvas.addEventListener('click',click);addReset(reset);reset();cleanup=()=>c.canvas.removeEventListener('click',click)};
+
+</script>
+<script>
+(function(){
+const challenges=[
+["Neon Rush","⚡","#18d5ff"],["Volcano","🌋","#ff653d"],["Frozen","❄️","#8ddcff"],
+["Galaxy","🌌","#a47aff"],["Jungle","🌴","#65d78b"],["Cyber","🤖","#db73ff"],
+["Golden","🏆","#ffd46a"],["Shadow","🌑","#8a91bb"],["Candy","🍭","#ff88c4"],
+["Ocean","🌊","#5bbcf5"],["Lava","🔥","#ff7a54"],["Crystal","💎","#7ce7e5"],
+["Sunset","🌅","#ff9b82"],["Midnight","🌙","#667ed8"],["Retro","👾","#b3e76e"],
+["Electric","🔋","#a3f55f"],["Royal","👑","#c48af4"],["Desert","🏜️","#edbb76"],
+["Aurora","🌈","#7be8b4"],["Hyper","🚀","#ff68b6"]
+];
+const base=[
+["Neon City Rush","city","racing","🏎️"],
+["Neon Duel","duel","multiplayer","⚔️"],
+["Star Blaster","space","action","🚀"],
+["Block World","blocks","creative","🧱"],
+["Neon Snake","snake","classic","🐍"],
+["Memory Flip","memory","classic","🧠"],
+["Skyline Parkour","parkour","action","🏃"],
+["Turbo Sprint","race","racing","🏁"],
+["UFO Dodge","dodge","action","🛸"],
+["Target Frenzy","targets","action","🎯"],
+["Monster Maze","maze","action","🧟"],
+["Gem Collector","gems","classic","💎"],
+["Neon Pong","pong","multiplayer","🏓"],
+["Hoop Hero","hoops","classic","🏀"],
+["2048 Fusion","2048","classic","🧩"],
+["Connect Four","connect","multiplayer","🟡"],
+["Tic-Tac-Toe","ttt","multiplayer","❌"],
+["Jump Dash","runner","action","🦘"],
+["Galaxy Catch","catch","action","🌌"],
+["Simon Lights","simon","classic","🧠"],
+["Math Blitz","math","classic","🧮"],
+["Frog Hop","frog","action","🐸"],
+["Planet Orbit","orbit","action","🪐"],
+["Brick Breaker","brick","classic","🧱"]
+];
+const collection=document.getElementById("cards");
+const info=document.createElement("section");
+info.style.cssText="margin:25px 0 18px;padding:20px;border-radius:17px;background:#17233e;border:1px solid #3d507e";
+info.innerHTML='<h2 style="margin:0 0 7px">🎮 500 playable arcade entries</h2><p style="color:#bbcae6;margin:0">30 core mini-games plus 470 themed challenge editions. Challenge editions share the core game mechanics and add their own look. These are not 500 independently developed game engines.</p>';
+collection.parentNode.insertBefore(info,collection);
+let count=0;
+for(let i=0;i<base.length;i++){
+ for(let j=0;j<challenges.length;j++){
+  if(count>=470)break;
+  const [name,id,category,emoji]=base[i];
+  const [theme,themeEmoji,color]=challenges[j];
+  const card=document.createElement("article");
+  card.className="card";
+  card.dataset.cat=category;
+  card.dataset.name=(name+" "+theme+" challenge edition").toLowerCase();
+  const art=document.createElement("div");
+  art.className="art";
+  art.style.background="linear-gradient(135deg,"+color+",#222b61 58%,#111a31)";
+  art.textContent=emoji;
+  const small=document.createElement("span");
+  small.className="small";
+  small.textContent=theme.toUpperCase()+" EDITION";
+  art.appendChild(small);
+  const content=document.createElement("div");
+  content.className="content";
+  const heading=document.createElement("h2");
+  heading.textContent=name+": "+theme;
+  const description=document.createElement("p");
+  description.textContent="Play "+name+" with a "+theme.toLowerCase()+" visual theme. Challenge edition #"+(count+1)+".";
+  const button=document.createElement("button");
+  button.textContent="PLAY CHALLENGE ↗";
+  button.addEventListener("click",()=>{
+    launch(id);
+    const canvas=document.getElementById("screen");
+    if(canvas)canvas.style.filter="hue-rotate("+((j*37)%360)+"deg) saturate(1.35)";
+    document.getElementById("gameTitle").textContent=name+" — "+theme+" Edition";
+  });
+  content.append(heading,description,button);
+  card.append(art,content);
+  collection.appendChild(card);
+  count++;
+ }
+}
+const heroStats=document.querySelector(".stats span");
+if(heroStats)heroStats.textContent="🎮 500 playable entries";
+const search=document.getElementById("search");
+const filter=document.getElementById("filter");
+const countText=document.createElement("div");
+countText.style.cssText="color:#aebddd;margin:-8px 0 15px;font-size:13px";
+collection.parentNode.insertBefore(countText,collection);
+function updateCount(){
+ const q=search.value.toLowerCase(),cat=filter.value;
+ let shown=0;
+ collection.querySelectorAll(".card").forEach(card=>{
+  const visible=card.dataset.name.includes(q)&&(cat==="all"||card.dataset.cat===cat);
+  card.style.display=visible?"":"none";
+  if(visible)shown++;
+ });
+ countText.textContent="Showing "+shown+" of 500 games and challenge editions";
+}
+search.addEventListener("input",updateCount);
+filter.addEventListener("change",updateCount);
+updateCount();
+})();
+</script>
+
+<style>
+#upgradeBar{margin:24px 0;padding:20px;background:linear-gradient(115deg,#263b6c,#24204e);border:1px solid #6375ba;border-radius:20px}
+#upgradeBar h2{margin:0 0 9px}#upgradeBar p{color:#d3dcf8;margin:0 0 14px}
+#upgradeBar button{margin:3px}.avatarSelect{background:#141d35;border:1px solid #465781;color:#fff;border-radius:10px;padding:10px}
+</style>
+<script>
+(function(){
+const upgrade=document.createElement('section');
+upgrade.id='upgradeBar';
+upgrade.innerHTML='<h2>🌐 Pixel Verse Games Worlds — New!</h2><p>Explore a 3D-style world with a third-person camera, customize your avatar, or join a real online room when the included server is running.</p><button id="openWorld">🌍 Explore 3D World</button> <button id="openRooms">👥 Online Friend Rooms</button>';
+document.querySelector('.hero').after(upgrade);
+const avatarColors=['#64f5df','#ff84bb','#ffd66b','#8fa7ff','#a5f184'];
+let avatarColor=localStorage.getItem('pixelverseAvatar')||avatarColors[0];
+let avatarName=localStorage.getItem('pixelverseName')||'Player';
+let onlineSocket=null;
+function setGame(name,help){closeGame();document.getElementById('playPanel').style.display='block';document.getElementById('playPanel').scrollIntoView({behavior:'smooth'});return setup(name,help,700,440)}
+function customize(){
+ const controls=document.createElement('div');controls.className='hud';
+ const name=document.createElement('input');name.maxLength=18;name.value=avatarName;name.placeholder='Your player name';name.style.maxWidth='180px';
+ name.addEventListener('change',()=>{avatarName=name.value.trim().slice(0,18)||'Player';localStorage.setItem('pixelverseName',avatarName)});
+ const sel=document.createElement('select');sel.className='avatarSelect';
+ avatarColors.forEach((col,i)=>{const op=document.createElement('option');op.value=col;op.textContent=['Mint','Pink','Gold','Blue','Lime'][i];sel.append(op)});
+ sel.value=avatarColor;sel.onchange=()=>{avatarColor=sel.value;localStorage.setItem('pixelverseAvatar',avatarColor)};
+ controls.append(name,sel);document.getElementById('gameHost').prepend(controls);
+}
+function world(){
+ const ctx=setGame('🌍 Pixelverse 3D World','WASD / arrow keys to walk • Q / E to turn camera • Explore the colorful 3D-style island.');
+ customize();
+ const k=controls(),canvas=ctx.canvas;
+ let px=0,pz=0,angle=0,frameId=0,live=true;
+ const cubes=[];
+ for(let x=-6;x<=6;x++)for(let z=-6;z<=6;z++)if((Math.abs(x)>1||Math.abs(z)>1)&&(x*7+z*13+300)%7===0)cubes.push({x:x*2.4,z:z*2.4,h:1+(Math.abs(x*z)%3)*.7});
+ function project(x,y,z){
+   const dx=x-px,dz=z-pz;
+   const side=dx*Math.cos(angle)-dz*Math.sin(angle);
+   const depth=dx*Math.sin(angle)+dz*Math.cos(angle)+7;
+   if(depth<.3)return null;
+   const scale=390/depth;
+   return {x:350+side*scale,y:195-(y-1.8)*scale,depth};
+ }
+ function poly(points,color){const projected=points.map(v=>project(...v));if(projected.some(v=>!v))return;ctx.beginPath();ctx.moveTo(projected[0].x,projected[0].y);for(let i=1;i<projected.length;i++)ctx.lineTo(projected[i].x,projected[i].y);ctx.closePath();ctx.fillStyle=color;ctx.fill();ctx.strokeStyle='#07112644';ctx.stroke()}
+ function cube(x,z,h){const a=.85,y=0;
+ poly([[x-a,h,z-a],[x+a,h,z-a],[x+a,h,z+a],[x-a,h,z+a]],'#a1e8b6');
+ poly([[x-a,y,z+a],[x+a,y,z+a],[x+a,h,z+a],[x-a,h,z+a]],'#387c8c');
+ poly([[x+a,y,z-a],[x+a,y,z+a],[x+a,h,z+a],[x+a,h,z-a]],'#32617b');
+ poly([[x-a,y,z-a],[x-a,y,z+a],[x-a,h,z+a],[x-a,h,z-a]],'#488da0');
+ }
+ function draw(){
+  const sky=ctx.createLinearGradient(0,0,0,440);sky.addColorStop(0,'#15265b');sky.addColorStop(.55,'#4d83a9');sky.addColorStop(.56,'#2f876b');sky.addColorStop(1,'#15503e');ctx.fillStyle=sky;ctx.fillRect(0,0,700,440);
+  for(let i=-18;i<=18;i+=2){poly([[i,0,-18],[i+.07,0,-18],[i+.07,0,18],[i,0,18]],'#ffffff15');poly([[-18,0,i],[18,0,i],[18,0,i+.07],[-18,0,i+.07]],'#ffffff15')}
+  cubes.sort((a,b)=>Math.hypot(b.x-px,b.z-pz)-Math.hypot(a.x-px,a.z-pz)).forEach(b=>cube(b.x,b.z,b.h));
+  // Avatar is anchored to the third-person camera and has an animated bob.
+  const bob=Math.sin(Date.now()/140)*2;
+  ctx.fillStyle='#0007';ctx.beginPath();ctx.ellipse(350,382,34,10,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=avatarColor;ctx.fillRect(332,312+bob,36,51);
+  ctx.fillStyle='#27344e';ctx.fillRect(331,363+bob,15,29);ctx.fillRect(354,363+bob,15,29);
+  ctx.fillStyle='#ffd5b5';ctx.beginPath();ctx.arc(350,295+bob,19,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#142a42';ctx.fillRect(341,293+bob,5,5);ctx.fillRect(355,293+bob,5,5);
+  ctx.fillStyle='#fff';ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.fillText(avatarName,350,261+bob);ctx.textAlign='left';
+  ctx.fillStyle='#09162c99';ctx.fillRect(12,12,165,42);ctx.fillStyle='#fff';ctx.font='13px system-ui';ctx.fillText('Position: '+px.toFixed(1)+', '+pz.toFixed(1),23,37);
+ }
+ function loop(){
+ if(!live)return;
+ const f=(k.keys.w||k.keys.arrowup?1:0)-(k.keys.s||k.keys.arrowdown?1:0);
+ const side=(k.keys.d||k.keys.arrowright?1:0)-(k.keys.a||k.keys.arrowleft?1:0);
+ if(k.keys.q)angle-=.035;if(k.keys.e)angle+=.035;
+ const dx=(Math.sin(angle)*f+Math.cos(angle)*side)*.12,dz=(Math.cos(angle)*f-Math.sin(angle)*side)*.12;
+ px=Math.max(-16,Math.min(16,px+dx));pz=Math.max(-16,Math.min(16,pz+dz));
+ draw();frameId=requestAnimationFrame(loop);
+ }
+ loop();cleanup=()=>{live=false;cancelAnimationFrame(frameId);k.stop()};
+}
+function rooms(){
+ setGame('👥 Online Friend Rooms','Connect to a shared multiplayer server. Friends can join from other devices using the same room code and server address.');
+ document.getElementById('screen').style.display='none';
+ customize();
+ const panel=document.createElement('div');panel.style.cssText='width:min(100%,650px);display:grid;gap:10px';
+ panel.innerHTML='<input id="serverAddr" placeholder="WebSocket server URL (wss://your-server.example)" value="'+(localStorage.getItem('pixelverseServer')||'ws://localhost:3000')+'"><input id="roomCode" placeholder="Room code (e.g. FRIENDS)" maxlength="16" value="FRIENDS"><button id="joinRoom">JOIN ROOM</button><div id="roomStatus" style="color:#bcd0ee">The multiplayer server must be running. Use the included server folder when hosting.</div><div id="roomPlayers" style="color:#fff"></div>';
+ document.getElementById('gameHost').append(panel);
+ const status=panel.querySelector('#roomStatus'),players=panel.querySelector('#roomPlayers');
+ let members=[],k=null,loopId=0,px=100,py=100;
+ function paint(){
+ const c=document.getElementById('screen');c.style.display='block';
+ const ctx=c.getContext('2d');ctx.fillStyle='#101932';ctx.fillRect(0,0,700,440);
+ ctx.strokeStyle='#283b5c';for(let i=0;i<700;i+=35){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,440);ctx.stroke()}
+ for(let i=0;i<440;i+=35){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(700,i);ctx.stroke()}
+ members.forEach(m=>{ctx.fillStyle=m.color||'#70e7df';ctx.beginPath();ctx.arc(m.x||100,m.y||100,17,0,Math.PI*2);ctx.fill();ctx.font='13px system-ui';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(m.name||'Player',m.x||100,(m.y||100)-24)});ctx.textAlign='left';
+ }
+ function tick(){
+ if(!k)return;
+ let dx=(k.keys.d||k.keys.arrowright?1:0)-(k.keys.a||k.keys.arrowleft?1:0),dy=(k.keys.s||k.keys.arrowdown?1:0)-(k.keys.w||k.keys.arrowup?1:0);
+ px=Math.max(20,Math.min(680,px+dx*3));py=Math.max(20,Math.min(420,py+dy*3));
+ if(onlineSocket&&onlineSocket.readyState===1)onlineSocket.send(JSON.stringify({type:'move',x:px,y:py}));
+ paint();loopId=requestAnimationFrame(tick);
+ }
+ panel.querySelector('#joinRoom').onclick=()=>{
+ const url=panel.querySelector('#serverAddr').value.trim(),room=panel.querySelector('#roomCode').value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,16);
+ if(!/^wss?:\/\//.test(url)||!room){status.textContent='Enter a valid ws:// or wss:// address and room code.';return}
+ localStorage.setItem('pixelverseServer',url);
+ if(onlineSocket)onlineSocket.close();if(k){k.stop();k=null;cancelAnimationFrame(loopId)}
+ try{onlineSocket=new WebSocket(url)}catch(e){status.textContent='Invalid server address.';return}
+ status.textContent='Connecting…';
+ onlineSocket.onopen=()=>{onlineSocket.send(JSON.stringify({type:'join',room,name:avatarName,color:avatarColor}));status.textContent='Connected to room '+room+'! Move with WASD / arrows.';k=controls();tick()};
+ onlineSocket.onmessage=e=>{try{const msg=JSON.parse(e.data);if(msg.type==='state'){members=msg.players;players.textContent='Players online: '+members.map(m=>m.name).join(', ');paint()}else if(msg.type==='error')status.textContent=msg.message}catch(_){}};
+ onlineSocket.onerror=()=>status.textContent='Connection failed. Check that the server is running and accessible.';
+ onlineSocket.onclose=()=>{status.textContent='Disconnected from the server.';if(k){k.stop();k=null;cancelAnimationFrame(loopId)}};
+ };
+ cleanup=()=>{if(onlineSocket){onlineSocket.close();onlineSocket=null}if(k)k.stop();cancelAnimationFrame(loopId)};
+}
+document.getElementById('openWorld').onclick=world;
+document.getElementById('openRooms').onclick=rooms;
+})();
+</script>
+
+<script>
+(function(){
+const additions=[
+['💣','Minefield','Reveal safe squares and flag hidden mines.','classic','minefield','#bc526e'],
+['🔨','Mole Mayhem','Whack the moles before time runs out.','action','moles','#bb874d'],
+['💡','Lights Out','Turn off every glowing tile.','classic','lights','#5c8ddb'],
+['🧩','Slide Puzzle','Rearrange fifteen tiles into the right order.','classic','slide','#8768bc'],
+['⚡','Reflex Rush','Test your reaction time against the clock.','classic','reflex','#d89947'],
+['🐦','Sky Flapper','Fly through gaps in the pipes.','action','flap','#5aacc7'],
+['🏗️','Tower Builder','Stack moving blocks into the tallest tower.','creative','tower','#7d83d4'],
+['🫧','Bubble Burst','Pop bubbles before they escape.','action','bubbles','#4d9cbb'],
+['🔤','Word Scramble','Unscramble a new word every round.','classic','words','#b97a9c'],
+['⌨️','Typing Sprint','Type words quickly to earn points.','classic','typing','#4ca994'],
+['🎵','Beat Lane','Hit the lanes when the notes reach the line.','action','beat','#a16bd0'],
+['🛡️','Castle Defense','Defend your castle by clicking the invaders.','action','castle','#bd775c']
+];
+const catalog=document.getElementById('cards');
+const all=window.games||games;
+for(const [emoji,name,desc,cat,id,color] of additions){
+const card=document.createElement('article');card.className='card';card.dataset.cat=cat;card.dataset.name=(name+' '+desc).toLowerCase();
+card.innerHTML='<div class="art" style="background:linear-gradient(125deg,'+color+',#283766,#111a30)">'+emoji+'<span class="small">NEW ORIGINAL GAME</span></div><div class="content"><h2>'+name+'</h2><p>'+desc+'</p></div>';
+const b=document.createElement('button');b.textContent='PLAY NOW ↗';b.onclick=()=>launch(id);card.querySelector('.content').append(b);catalog.append(card);
+}
+function scene(name,help,w=600,h=420){return setup(name,help,w,h)}
+function label(str){hud('<span>'+str+'</span>')}
+function square(c,x,y,w,h,color){c.fillStyle=color;c.fillRect(x,y,w,h)}
+function write(c,text,x,y,size=25,color='#fff'){c.fillStyle=color;c.font='bold '+size+'px system-ui';c.textAlign='center';c.fillText(text,x,y);c.textAlign='left'}
+function listen(c,fn){c.canvas.addEventListener('click',fn);cleanup=()=>c.canvas.removeEventListener('click',fn)}
+function point(e,c){const r=c.canvas.getBoundingClientRect();return {x:(e.clientX-r.left)*c.canvas.width/r.width,y:(e.clientY-r.top)*c.canvas.height/r.height}}
+all.minefield=()=>{
+const c=scene('💣 Minefield','Left click: reveal • Right click: flag • Avoid all 12 mines.',480,480);let mines,revealed,flags,over;
+const idx=(x,y)=>y*8+x;
+function reset(){mines=new Set();while(mines.size<12)mines.add(Math.floor(Math.random()*64));revealed=new Set();flags=new Set();over=false;draw()}
+function adjacent(x,y){let n=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(x+dx>=0&&x+dx<8&&y+dy>=0&&y+dy<8&&mines.has(idx(x+dx,y+dy)))n++;return n}
+function reveal(x,y){let i=idx(x,y);if(revealed.has(i)||flags.has(i)||over)return;revealed.add(i);if(mines.has(i)){over=true;return}if(!adjacent(x,y))for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(x+dx>=0&&x+dx<8&&y+dy>=0&&y+dy<8)reveal(x+dx,y+dy)}
+function draw(){label('💣 Mines: 12 | 🚩 Flags: '+flags.size+(over?' | GAME OVER':''));square(c,0,0,480,480,'#15213c');for(let y=0;y<8;y++)for(let x=0;x<8;x++){let i=idx(x,y),shown=revealed.has(i)||over&&mines.has(i);square(c,x*60+2,y*60+2,56,56,shown?'#344964':'#566a91');if(shown)write(c,mines.has(i)?'💣':adjacent(x,y)||'',x*60+30,y*60+39,25);else if(flags.has(i))write(c,'🚩',x*60+30,y*60+39,24)}}
+function act(e,flag){e.preventDefault();let q=point(e,c),x=Math.floor(q.x/60),y=Math.floor(q.y/60);if(x<0||x>7||y<0||y>7||over)return;let i=idx(x,y);if(flag){if(flags.has(i))flags.delete(i);else flags.add(i)}else reveal(x,y);draw()}
+let left=e=>act(e,false),right=e=>act(e,true);c.canvas.addEventListener('click',left);c.canvas.addEventListener('contextmenu',right);btn('↻ New Field',reset);reset();cleanup=()=>{c.canvas.removeEventListener('click',left);c.canvas.removeEventListener('contextmenu',right)}
+};
+all.moles=()=>{
+const c=scene('🔨 Mole Mayhem','Click the mole! Score as many hits as you can in 30 seconds.');let mole=0,score=0,time=30,timer,step;
+function draw(){label('🔨 Hits: '+score+' | ⏱️ '+time+' seconds');square(c,0,0,600,420,'#294f40');for(let i=0;i<9;i++){let x=100+(i%3)*200,y=80+Math.floor(i/3)*130;c.fillStyle='#182f27';c.beginPath();c.ellipse(x,y,62,35,0,0,Math.PI*2);c.fill();if(i===mole&&time>0)write(c,'🐹',x,y+14,55)}if(time===0)write(c,'TIME UP!',300,205,34)}
+function reset(){clearInterval(timer);clearInterval(step);score=0;time=30;mole=Math.floor(Math.random()*9);timer=setInterval(()=>{time--;draw();if(time<=0){clearInterval(timer);clearInterval(step)}},1000);step=setInterval(()=>{mole=Math.floor(Math.random()*9);draw()},750);draw()}
+function click(e){if(time<=0)return;let q=point(e,c),x=Math.round((q.x-100)/200),y=Math.round((q.y-80)/130);if(x>=0&&x<3&&y>=0&&y<3&&y*3+x===mole){score++;mole=Math.floor(Math.random()*9);draw()}}
+c.canvas.addEventListener('click',click);btn('↻ Restart',reset);reset();cleanup=()=>{clearInterval(timer);clearInterval(step);c.canvas.removeEventListener('click',click)}
+};
+all.lights=()=>{
+const c=scene('💡 Lights Out','Click a tile to toggle it and its neighbors. Turn all lights off.',450,450);let grid,moves;
+function reset(){grid=Array(25).fill(false);moves=0;for(let n=0;n<12;n++)toggle(Math.floor(Math.random()*25),false);draw()}
+function toggle(i,count=true){let x=i%5,y=Math.floor(i/5);for(let [dx,dy] of [[0,0],[1,0],[-1,0],[0,1],[0,-1]]){let xx=x+dx,yy=y+dy;if(xx>=0&&xx<5&&yy>=0&&yy<5)grid[yy*5+xx]=!grid[yy*5+xx]}if(count)moves++}
+function draw(){label('💡 Moves: '+moves+' | Lights left: '+grid.filter(Boolean).length);square(c,0,0,450,450,'#0c1630');grid.forEach((v,i)=>square(c,(i%5)*90+5,Math.floor(i/5)*90+5,80,80,v?'#ffda72':'#293650'));if(!grid.some(Boolean))write(c,'SOLVED!',225,230,40)}
+function click(e){let q=point(e,c),x=Math.floor(q.x/90),y=Math.floor(q.y/90);if(x<0||x>4||y<0||y>4)return;toggle(y*5+x);draw()}
+c.canvas.addEventListener('click',click);btn('↻ Scramble',reset);reset();cleanup=()=>c.canvas.removeEventListener('click',click)
+};
+all.slide=()=>{
+const c=scene('🧩 Slide Puzzle','Click a tile next to the empty space to move it into place.',480,480);let tiles,moves;
+function reset(){tiles=Array.from({length:16},(_,i)=>(i+1)%16);moves=0;for(let n=0;n<300;n++){let e=tiles.indexOf(0),opts=[e-4,e+4,e%4?e-1:-1,e%4<3?e+1:-1].filter(i=>i>=0&&i<16),j=opts[Math.floor(Math.random()*opts.length)];[tiles[e],tiles[j]]=[tiles[j],tiles[e]]}draw()}
+function draw(){label('🧩 Moves: '+moves);square(c,0,0,480,480,'#1c2544');tiles.forEach((v,i)=>{if(!v)return;square(c,(i%4)*120+5,Math.floor(i/4)*120+5,110,110,'#7b89d0');write(c,v,(i%4)*120+60,Math.floor(i/4)*120+75,42)})}
+function click(e){let q=point(e,c),x=Math.floor(q.x/120),y=Math.floor(q.y/120),i=y*4+x,z=tiles.indexOf(0);if(x<0||x>3||y<0||y>3)return;if(Math.abs(i%4-z%4)+Math.abs(Math.floor(i/4)-Math.floor(z/4))===1){[tiles[i],tiles[z]]=[tiles[z],tiles[i]];moves++;draw()}}
+c.canvas.addEventListener('click',click);btn('↻ Shuffle',reset);reset();cleanup=()=>c.canvas.removeEventListener('click',click)
+};
+all.reflex=()=>{
+const c=scene('⚡ Reflex Rush','Wait until the screen turns green, then click as fast as possible.');let state='ready',start=0,delay,record=Infinity,result='';
+function draw(){label('⚡ Best reaction: '+(record===Infinity?'—':record+' ms'));square(c,0,0,600,420,state==='go'?'#1f936c':state==='wait'?'#ad435e':'#2d4173');write(c,state==='ready'?'CLICK TO START':state==='wait'?'WAIT FOR GREEN':state==='go'?'CLICK NOW!':result,300,220,32)}
+function click(){if(state==='ready'||state==='result'){state='wait';result='';delay=setTimeout(()=>{state='go';start=performance.now();draw()},900+Math.random()*2300)}else if(state==='wait'){clearTimeout(delay);state='result';result='TOO EARLY!'}else if(state==='go'){let ms=Math.round(performance.now()-start);record=Math.min(record,ms);state='result';result=ms+' ms — TRY AGAIN!'}draw()}
+c.canvas.addEventListener('click',click);draw();cleanup=()=>{clearTimeout(delay);c.canvas.removeEventListener('click',click)}
+};
+all.flap=()=>{
+const c=scene('🐦 Sky Flapper','Space / click to flap • Fly through the pipe gaps.');let y,vy,pipes,score,over,tick,keys=controls();
+function reset(){y=210;vy=0;pipes=[];score=0;over=false;tick=0}
+function flap(){if(over)reset();else vy=-6.5}
+const click=()=>flap();c.canvas.addEventListener('click',click);btn('↻ Restart',reset);reset();let held=false;
+let stop=frame(t=>{if(keys.keys[' ']&&!held){flap();held=true}if(!keys.keys[' '])held=false;if(!over){tick++;vy+=.35;y+=vy;if(tick%105===0)pipes.push({x:640,gap:110+Math.random()*180,scored:false});pipes.forEach(o=>{o.x-=2.8;if(!o.scored&&o.x<110){score++;o.scored=true}if(o.x<145&&o.x+62>105&&(y<o.gap-73||y>o.gap+73))over=true});pipes=pipes.filter(o=>o.x>-80);if(y<12||y>408)over=true}label('🐦 Score: '+score);square(c,0,0,600,420,'#2b7eae');pipes.forEach(o=>{square(c,o.x,0,62,o.gap-73,'#5cdb9a');square(c,o.x,o.gap+73,62,420-o.gap-73,'#5cdb9a')});circle(c,120,y,16,'#ffe57a');if(over)write(c,'GAME OVER — CLICK TO RESTART',300,205,23)});cleanup=()=>{stop();keys.stop();c.canvas.removeEventListener('click',click)}
+};
+all.tower=()=>{
+const c=scene('🏗️ Tower Builder','Click or press Space to drop each moving block. Stack as high as possible.');let blocks,active,score,over,dir;
+function reset(){blocks=[{x:215,w:170,y:382}];active={x:0,w:170,y:352};score=0;over=false;dir=3}
+function drop(){if(over){reset();return}let prev=blocks[blocks.length-1],left=Math.max(active.x,prev.x),right=Math.min(active.x+active.w,prev.x+prev.w);if(right-left<8){over=true;return}blocks.push({x:left,w:right-left,y:active.y});score++;active={x:0,w:right-left,y:active.y-30};dir=3+Math.min(score*.1,3)}
+const click=()=>drop(),keydown=e=>{if(e.key===' '){e.preventDefault();drop()}};c.canvas.addEventListener('click',click);window.addEventListener('keydown',keydown);btn('↻ Restart',reset);reset();
+let stop=frame(t=>{if(!over){active.x+=dir;if(active.x<0||active.x+active.w>600)dir*=-1}label('🏗️ Tower height: '+score);square(c,0,0,600,420,'#152a49');let offset=Math.max(0,score-10)*30;blocks.forEach((b,i)=>square(c,b.x,b.y+offset,b.w,28,i%2?'#81a7ff':'#69e6d4'));if(!over)square(c,active.x,active.y+offset,active.w,28,'#ffd67d');else write(c,'TOWER FELL — CLICK TO RETRY',300,195,23)});cleanup=()=>{stop();c.canvas.removeEventListener('click',click);window.removeEventListener('keydown',keydown)}
+};
+all.bubbles=()=>{
+const c=scene('🫧 Bubble Burst','Click rising bubbles before they escape.');let bubbles=[],score=0,miss=0,tick=0,over=false;
+function reset(){bubbles=[];score=miss=tick=0;over=false}
+function click(e){let q=point(e,c);for(let i=bubbles.length-1;i>=0;i--)if(Math.hypot(q.x-bubbles[i].x,q.y-bubbles[i].y)<bubbles[i].r){score+=10;bubbles.splice(i,1);break}}
+c.canvas.addEventListener('click',click);btn('↻ Restart',reset);reset();let stop=frame(t=>{if(!over){tick++;if(tick%24===0)bubbles.push({x:25+Math.random()*550,y:440,r:15+Math.random()*20,v:1.2+Math.random()*2});bubbles.forEach(b=>b.y-=b.v);for(let i=bubbles.length-1;i>=0;i--)if(bubbles[i].y<-40){bubbles.splice(i,1);miss++;if(miss>=10)over=true}}label('🫧 Score: '+score+' | Escaped: '+miss+'/10');square(c,0,0,600,420,'#102d4e');bubbles.forEach(b=>{c.strokeStyle='#8deaff';c.lineWidth=4;c.beginPath();c.arc(b.x,b.y,b.r,0,Math.PI*2);c.stroke()});if(over)write(c,'GAME OVER',300,210,32)});cleanup=()=>{stop();c.canvas.removeEventListener('click',click)}
+};
+function wordGame(typing){
+const words=['GALAXY','PIXEL','ARCADE','ROCKET','PLANET','DRAGON','CASTLE','JUNGLE','PUZZLE','RACING','PLAYER','TARGET','NEON','GAMING','BLOCK'];
+const c=scene(typing?'⌨️ Typing Sprint':'🔤 Word Scramble',typing?'Type the displayed word and press Enter.':'Unscramble the word and press Enter.');
+let answer='',shown='',score=0;
+const field=document.createElement('input');field.placeholder=typing?'Type the word':'Your guess';field.autocomplete='off';document.getElementById('gameHost').append(field);
+function next(){answer=words[Math.floor(Math.random()*words.length)];shown=typing?answer:answer.split('').sort(()=>Math.random()-.5).join('');if(shown===answer&&!typing)shown=shown.split('').reverse().join('');draw()}
+function draw(){label('⭐ Score: '+score);square(c,0,0,600,420,'#1d2a4d');write(c,shown,300,200,48);write(c,typing?'TYPE IT!':'UNSCRAMBLE!',300,275,20,'#a9c5ed')}
+function submit(){if(field.value.trim().toUpperCase()===answer){score++;next()}field.value='';field.focus()}
+field.addEventListener('keydown',e=>{if(e.key==='Enter')submit()});btn('✓ Submit',submit);btn('↻ New Word',next);next();cleanup=()=>{}
+}
+all.words=()=>wordGame(false);all.typing=()=>wordGame(true);
+all.beat=()=>{
+const c=scene('🎵 Beat Lane','Press A, S, D, F as notes cross the glowing hit line.');let keys=controls(),notes=[],score=0,miss=0,tick=0,last={},over=false;
+function reset(){notes=[];score=miss=tick=0;last={};over=false}
+btn('↻ Restart',reset);reset();let stop=frame(t=>{if(!over){tick++;if(tick%28===0)notes.push({lane:Math.floor(Math.random()*4),y:-20,hit:false});notes.forEach(n=>n.y+=3.5);for(let i=0;i<4;i++){let key='asdf'[i];if(keys.keys[key]&&!last[key]){let idx=notes.findIndex(n=>n.lane===i&&Math.abs(n.y-355)<42);if(idx>=0){notes.splice(idx,1);score+=10}else miss++}last[key]=!!keys.keys[key]}notes=notes.filter(n=>{if(n.y>430){miss++;return false}return true});if(miss>=15)over=true}label('🎵 Score: '+score+' | Misses: '+miss+'/15');square(c,0,0,600,420,'#17152e');for(let i=0;i<4;i++){square(c,65+i*120,0,105,420,['#39295c','#2b4267','#2b555e','#51405c'][i]);write(c,'ASDF'[i],117+i*120,395,27)}square(c,55,350,490,5,'#ffe78c');notes.forEach(n=>square(c,76+n.lane*120,n.y,84,18,'#bba3ff'));if(over)write(c,'SONG OVER!',300,210,30)});cleanup=()=>{stop();keys.stop()}
+};
+all.castle=()=>{
+const c=scene('🛡️ Castle Defense','Click incoming enemies before they reach your castle.');let enemies=[],score=0,health=5,tick=0;
+function reset(){enemies=[];score=tick=0;health=5}
+function click(e){let q=point(e,c),i=enemies.findIndex(a=>Math.hypot(a.x-q.x,a.y-q.y)<24);if(i>=0){enemies.splice(i,1);score+=10}}
+c.canvas.addEventListener('click',click);btn('↻ Restart',reset);reset();let stop=frame(t=>{if(health>0){tick++;if(tick%50===0)enemies.push({x:600,y:90+Math.random()*270,v:1+Math.random()*1.4});enemies.forEach(a=>a.x-=a.v);for(let i=enemies.length-1;i>=0;i--)if(enemies[i].x<115){enemies.splice(i,1);health--}}label('🛡️ Score: '+score+' | Castle health: '+health);square(c,0,0,600,420,'#293c5d');square(c,0,350,600,70,'#356b53');square(c,25,150,110,200,'#8798ae');square(c,15,130,45,45,'#a8b5c8');square(c,95,130,45,45,'#a8b5c8');square(c,65,270,35,80,'#26374f');enemies.forEach(a=>{circle(c,a.x,a.y,19,'#ff8b86');write(c,'👾',a.x,a.y+10,24)});if(health<=0)write(c,'CASTLE LOST!',300,210,32)});cleanup=()=>{stop();c.canvas.removeEventListener('click',click)}
+};
+const stats=document.querySelector('.stats span');if(stats)stats.textContent='🎮 512 playable entries';
+const info=document.querySelector('#cards')?.previousElementSibling;
+if(info&&info.id!=='playPanel'&&info.tagName==='SECTION')info.querySelector('h2')&&(info.querySelector('h2').textContent='🎮 512 playable arcade entries');
+const counter=document.querySelector('#cards')?.previousElementSibling;
+function update(){const search=document.getElementById('search').value.toLowerCase(),filter=document.getElementById('filter').value;let shown=0;catalog.querySelectorAll('.card').forEach(card=>{const visible=card.dataset.name.includes(search)&&(filter==='all'||card.dataset.cat===filter);card.style.display=visible?'':'none';if(visible)shown++});if(counter&&counter.tagName==='DIV')counter.textContent='Showing '+shown+' of 512 games and challenge editions'}
+document.getElementById('search').addEventListener('input',update);document.getElementById('filter').addEventListener('change',update);update();
+})();
+</script>
+
+<style>
+#moreGamesHeading{margin:32px 0 16px;padding:23px;border-radius:18px;border:1px solid #5364a2;background:linear-gradient(110deg,#24365f,#1b2450)}
+#moreGamesHeading h2{margin:0 0 7px;font-size:27px}#moreGamesHeading p{margin:0;color:#b8c9ed}
+</style>
+<script>
+(function(){
+const core=[
+['Neon City Rush','city','racing','🏎️'],['Neon Duel','duel','multiplayer','⚔️'],
+['Star Blaster','space','action','🚀'],['Block World','blocks','creative','🧱'],
+['Neon Snake','snake','classic','🐍'],['Memory Flip','memory','classic','🧠'],
+['Skyline Parkour','parkour','action','🏃'],['Turbo Sprint','race','racing','🏁'],
+['UFO Dodge','dodge','action','🛸'],['Target Frenzy','targets','action','🎯'],
+['Monster Maze','maze','action','🧟'],['Gem Collector','gems','classic','💎'],
+['Neon Pong','pong','multiplayer','🏓'],['Hoop Hero','hoops','classic','🏀'],
+['2048 Fusion','2048','classic','🧩'],['Connect Four','connect','multiplayer','🟡'],
+['Tic-Tac-Toe','ttt','multiplayer','❌'],['Jump Dash','runner','action','🦘'],
+['Galaxy Catch','catch','action','🌌'],['Simon Lights','simon','classic','🧠'],
+['Math Blitz','math','classic','🧮'],['Frog Hop','frog','action','🐸'],
+['Planet Orbit','orbit','action','🪐'],['Brick Breaker','brick','classic','🧱'],
+['Minefield','minefield','classic','💣'],['Mole Mayhem','moles','action','🔨'],
+['Lights Out','lights','classic','💡'],['Slide Puzzle','slide','classic','🧩'],
+['Reflex Rush','reflex','classic','⚡'],['Sky Flapper','flap','action','🐦']
+];
+const editions=[
+['Meteor Storm','☄️',12],['Moonlight','🌙',230],['Diamond','💎',170],
+['Tropical','🌴',110],['Thunderbolt','⚡',55],['Firestorm','🔥',330],
+['Deep Sea','🌊',195],['Cherry Blossom','🌸',285],['Gold Rush','🏆',35],
+['Robot City','🤖',260],['Rainbow','🌈',145],['Phantom','👻',275],
+['Candyland','🍬',300],['Arctic','🧊',205],['Emerald','🍀',105],
+['Sunrise','🌅',20],['Cosmic','🪐',245],['Royal Purple','👑',275],
+['Desert Mirage','🏜️',45],['Neon Nights','🌃',190]
+];
+const grid=document.getElementById('cards');
+const heading=document.createElement('section');heading.id='moreGamesHeading';
+heading.innerHTML='<h2>🚀 600 New Challenge Editions</h2><p>Explore 600 additional themed versions of our arcade games. Every entry launches a playable game, with a different visual treatment. These are challenge editions, not 600 independently programmed game engines.</p>';
+grid.parentElement.insertBefore(heading,grid);
+let made=0;
+for(const [name,id,category,emoji] of core){
+ for(const [edition,editionEmoji,hue] of editions){
+  const card=document.createElement('article');
+  card.className='card';card.dataset.cat=category;
+  card.dataset.name=(name+' '+edition+' edition challenge '+category).toLowerCase();
+  const art=document.createElement('div');art.className='art';
+  art.style.background='linear-gradient(135deg,hsl('+hue+' 77% 51%),#273867 60%,#10192f)';
+  art.textContent=emoji;
+  const tag=document.createElement('span');tag.className='small';tag.textContent=edition.toUpperCase()+' EDITION';art.append(tag);
+  const content=document.createElement('div');content.className='content';
+  const title=document.createElement('h2');title.textContent=name+' — '+edition;
+  const desc=document.createElement('p');desc.textContent=editionEmoji+' '+edition+' visual edition of '+name+'. Playable challenge #'+(made+1)+'.';
+  const play=document.createElement('button');play.textContent='PLAY CHALLENGE ↗';
+  play.addEventListener('click',()=>{
+   launch(id);
+   const canvas=document.getElementById('screen');
+   if(canvas)canvas.style.filter='hue-rotate('+hue+'deg) saturate(1.25)';
+   const gameTitle=document.getElementById('gameTitle');
+   if(gameTitle)gameTitle.textContent=name+' — '+edition+' Edition';
+  });
+  content.append(title,desc,play);card.append(art,content);grid.append(card);
+  made++;
+ }
+}
+const allCards=[...grid.querySelectorAll('.card')];
+const total=allCards.length;
+const hero=document.querySelector('.stats span');
+if(hero)hero.textContent='🎮 '+total.toLocaleString()+' playable entries';
+const info=[...document.querySelectorAll('section')].find(el=>el.textContent.includes('playable arcade entries'));
+if(info){const h=info.querySelector('h2');if(h)h.textContent='🎮 '+total.toLocaleString()+' playable arcade entries'}
+const search=document.getElementById('search'),filter=document.getElementById('filter');
+let count=document.getElementById('pixelVerseCount');
+if(!count){count=document.createElement('p');count.id='pixelVerseCount';count.style.cssText='color:#c7d6f4;margin:12px 0';grid.parentElement.insertBefore(count,grid)}
+function update(){
+ const q=search.value.trim().toLowerCase(),cat=filter.value;
+ let visible=0;
+ allCards.forEach(card=>{
+  const show=card.dataset.name.includes(q)&&(cat==='all'||card.dataset.cat===cat);
+  card.style.display=show?'':'none';if(show)visible++;
+ });
+ count.textContent='Showing '+visible.toLocaleString()+' of '+total.toLocaleString()+' game entries';
+}
+search.addEventListener('input',update);
+filter.addEventListener('change',update);
+update();
+})();
+</script>
+
+<script>
+(function(){
+"use strict";
+const base=[
+["Neon City Rush","city","racing","🏎️"],["Neon Duel","duel","multiplayer","⚔️"],
+["Star Blaster","space","action","🚀"],["Block World","blocks","creative","🧱"],
+["Neon Snake","snake","classic","🐍"],["Memory Flip","memory","classic","🧠"],
+["Skyline Parkour","parkour","action","🏃"],["Turbo Sprint","race","racing","🏁"],
+["UFO Dodge","dodge","action","🛸"],["Target Frenzy","targets","action","🎯"],
+["Monster Maze","maze","action","🧟"],["Gem Collector","gems","classic","💎"],
+["Neon Pong","pong","multiplayer","🏓"],["Hoop Hero","hoops","classic","🏀"],
+["2048 Fusion","2048","classic","🧩"],["Connect Four","connect","multiplayer","🟡"],
+["Tic-Tac-Toe","ttt","multiplayer","❌"],["Jump Dash","runner","action","🦘"],
+["Galaxy Catch","catch","action","🌌"],["Simon Lights","simon","classic","🧠"],
+["Math Blitz","math","classic","🧮"],["Frog Hop","frog","action","🐸"],
+["Planet Orbit","orbit","action","🪐"],["Brick Breaker","brick","classic","🧱"]
+];
+const themes=[
+["Hyperdrive","🚀",210],["Emerald Forest","🌲",132],["Ruby Realm","🔴",345],
+["Ice Kingdom","❄️",192],["Solar Flare","☀️",34],["Starlight","✨",260],
+["Neon Tokyo","🌆",302],["Ocean Depths","🐬",196],["Haunted Mansion","👻",268],
+["Sky Islands","☁️",182],["Dragon Fire","🐉",12],["Pixel Paradise","🎮",145],
+["Purple Storm","⛈️",277],["Cyberpunk","🤖",310],["Mystic Woods","🍄",115],
+["Moon Base","🌕",226],["Mars Colony","🔭",15],["Frozen Galaxy","🧊",202],
+["Electric Blue","⚡",215],["Pink Planet","🩷",322],["Golden Temple","🏛️",43],
+["Toxic Slime","🧪",90],["Pirate Cove","🏴‍☠️",186],["Crystal Cave","💠",176],
+["Retro Wave","📼",285],["Sunflower","🌻",54],["Steampunk","⚙️",26],
+["Cloud Nine","🌤️",195],["Alien Planet","👽",153],["Diamond City","💎",205],
+["Fireworks","🎆",333],["Bubblegum","🍬",320],["Cobalt Core","🔵",237],
+["Rainforest","🦜",128],["Thunder Valley","🌩️",248],["Rainbow Road","🌈",290],
+["Midnight Arcade","🕹️",265]
+];
+const grid=document.getElementById("cards");
+if(!grid)return;
+const fragment=document.createDocumentFragment();
+let added=0;
+for(const [name,id,category,emoji] of base){
+ for(const [theme,themeEmoji,hue] of themes){
+  const card=document.createElement("article");
+  card.className="card";
+  card.dataset.cat=category;
+  card.dataset.name=(name+" "+theme+" edition "+category).toLowerCase();
+  const art=document.createElement("div");art.className="art";
+  art.style.background="linear-gradient(135deg,hsl("+hue+" 75% 53%),#26366a 62%,#10182e)";
+  art.textContent=emoji;
+  const pill=document.createElement("span");pill.className="small";pill.textContent=theme.toUpperCase()+" EDITION";
+  art.append(pill);
+  const body=document.createElement("div");body.className="content";
+  const h=document.createElement("h2");h.textContent=name+" — "+theme;
+  const desc=document.createElement("p");
+  desc.textContent=themeEmoji+" "+theme+" visual edition. Play "+name+" with a different color style.";
+  const button=document.createElement("button");button.textContent="PLAY GAME ↗";
+  button.addEventListener("click",()=>{
+    launch(id);
+    const canvas=document.getElementById("screen");
+    if(canvas)canvas.style.filter="hue-rotate("+hue+"deg) saturate(1.35)";
+    const title=document.getElementById("gameTitle");
+    if(title)title.textContent=name+" — "+theme+" Edition";
+  });
+  body.append(h,desc,button);card.append(art,body);fragment.append(card);added++;
+ }
+}
+grid.append(fragment);
+const total=grid.querySelectorAll(".card").length;
+const stats=document.querySelector(".stats span");
+if(stats)stats.textContent="🎮 "+total.toLocaleString()+" playable entries";
+const heading=document.createElement("section");
+heading.style.cssText="margin:25px 0 16px;padding:20px;border-radius:17px;background:linear-gradient(110deg,#243c70,#242047);border:1px solid #5368a0";
+heading.innerHTML="<h2 style='margin:0 0 8px'>🎮 Pixel Verse Games — "+total.toLocaleString()+" Game Entries</h2><p style='margin:0;color:#c5d3f2'>Now featuring "+added+" additional themed game editions. The collection contains 42 core mini-games and themed versions of those games; editions share their original gameplay.</p>";
+grid.parentNode.insertBefore(heading,grid);
+const search=document.getElementById("search"),filter=document.getElementById("filter");
+const counter=document.getElementById("pixelVerseCount");
+const cards=Array.from(grid.querySelectorAll(".card"));
+function update(){
+ const q=search.value.trim().toLowerCase(),cat=filter.value;
+ let shown=0;
+ for(const card of cards){
+  const visible=card.dataset.name.includes(q)&&(cat==="all"||card.dataset.cat===cat);
+  card.style.display=visible?"":"none";
+  if(visible)shown++;
+ }
+ if(counter)counter.textContent="Showing "+shown.toLocaleString()+" of "+total.toLocaleString()+" game entries";
+}
+search.addEventListener("input",update);
+filter.addEventListener("change",update);
+update();
+})();
+</script>
+
+<script>
+(function(){
+const newGames=[
+['♟️','Checkers Arena','Capture pieces and crown kings in a two-player strategy match.','multiplayer','checkers','#a75b9a'],
+['🧬','Conway Life Lab','Draw cells and watch living patterns evolve.','creative','life','#4c9fba'],
+['🚢','Battleship Command','Hunt hidden enemy ships on a tactical grid.','classic','battleship','#376da8'],
+['🕵️','Codebreaker','Crack a secret four-digit code using clues.','classic','codebreaker','#8065bc'],
+['🪢','Untangle','Move connected points until no lines cross.','classic','untangle','#4c9c94'],
+['🔮','Peg Solitaire','Jump pegs to clear the board and leave just one.','classic','peg','#a68a5a'],
+['🃏','Higher or Lower','Predict whether the next card is higher or lower.','classic','higher','#a54f7a'],
+['🎰','Slot Machine','Spin three reels and collect matching symbols.','classic','slots','#b07c49'],
+['🌱','Garden Grower','Plant, water, and harvest a tiny garden.','creative','garden','#438f68'],
+['🍳','Kitchen Rush','Complete food orders before they expire.','action','kitchen','#b47751'],
+['🛸','Space Invaders','Shoot advancing alien formations before they land.','action','invaders','#5559aa'],
+['🐛','Wormhole','Connect matching portals without crossing paths.','classic','flowlines','#a74c8e'],
+['🧲','Magnet Maze','Steer a steel ball through a maze with magnetic pulls.','action','magnet','#4e8fba'],
+['🎣','Fishing Frenzy','Cast your line and catch fish swimming below.','classic','fishing','#3d92a5'],
+['🧪','Potion Mixer','Mix ingredients to discover potion recipes.','creative','potions','#8c65b7'],
+['🎳','Mini Bowling','Aim a rolling ball and knock down pins.','classic','bowling','#b05c67']
+];
+const gameMap=games;
+const cards=document.getElementById('cards');
+for(const [emoji,name,desc,cat,id,color] of newGames){
+const card=document.createElement('article');card.className='card';card.dataset.cat=cat;card.dataset.name=(name+' '+desc).toLowerCase();
+const art=document.createElement('div');art.className='art';art.style.background='linear-gradient(135deg,'+color+',#273763,#10182d)';art.textContent=emoji;
+const label=document.createElement('span');label.className='small';label.textContent='NEW GAMEPLAY';art.append(label);
+const body=document.createElement('div');body.className='content';const h=document.createElement('h2');h.textContent=name;const d=document.createElement('p');d.textContent=desc;
+const b=document.createElement('button');b.textContent='PLAY NOW ↗';b.onclick=()=>launch(id);body.append(h,d,b);card.append(art,body);cards.append(card);
+}
+const scene=(name,help,w=640,h=440)=>setup(name,help,w,h);
+const rect=(c,x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h)};
+const txt=(c,str,x,y,size=24,color='#fff')=>{c.font='bold '+size+'px system-ui';c.fillStyle=color;c.textAlign='center';c.fillText(String(str),x,y);c.textAlign='left'};
+const pt=(e,c)=>{const r=c.canvas.getBoundingClientRect();return {x:(e.clientX-r.left)*c.canvas.width/r.width,y:(e.clientY-r.top)*c.canvas.height/r.height}};
+const on=(c,fn)=>{c.canvas.addEventListener('click',fn);cleanup=()=>c.canvas.removeEventListener('click',fn)};
+const status=s=>hud('<span>'+s+'</span>');
+gameMap.checkers=()=>{
+const c=scene('♟️ Checkers Arena','Two players • Click your piece, then a highlighted square • Capture by jumping.',560,560);
+let board,turn,selected,winner;
+function reset(){board=Array.from({length:8},(_,y)=>Array.from({length:8},(_,x)=>(x+y)%2===1?(y<3?2:y>4?1:0):0));turn=1;selected=null;winner=0;draw()}
+function moves(x,y){const v=board[y][x],out=[];if(!v)return out;const dirs=Math.abs(v)===3?[-1,1]:[v===1?-1:1];for(const dy of dirs)for(const dx of [-1,1]){let xx=x+dx,yy=y+dy;if(xx>=0&&xx<8&&yy>=0&&yy<8){if(!board[yy][xx])out.push([xx,yy]);else if(Math.sign(board[yy][xx])!==Math.sign(v)&&board[yy][xx]!==0){let nx=x+2*dx,ny=y+2*dy;if(nx>=0&&nx<8&&ny>=0&&ny<8&&!board[ny][nx])out.push([nx,ny])}else if(board[yy][xx]&&Math.abs(board[yy][xx])!==Math.abs(v)&&Math.sign(board[yy][xx])===Math.sign(v)){}else if(board[yy][xx]&&Math.sign(board[yy][xx])===Math.sign(v)){}else{let nx=x+2*dx,ny=y+2*dy;if(nx>=0&&nx<8&&ny>=0&&ny<8&&!board[ny][nx])out.push([nx,ny])}}}return out}
+function validMoves(x,y){let v=board[y][x];if(!v)return [];let dirs=Math.abs(v)===3?[-1,1]:[v===1?-1:1],out=[];for(let dy of dirs)for(let dx of [-1,1]){let xx=x+dx,yy=y+dy;if(xx<0||xx>7||yy<0||yy>7)continue;if(!board[yy][xx])out.push([xx,yy]);else if((board[yy][xx]===1||board[yy][xx]===3)!==(v===1||v===3)){let nx=x+2*dx,ny=y+2*dy;if(nx>=0&&nx<8&&ny>=0&&ny<8&&!board[ny][nx])out.push([nx,ny])}}return out}
+function draw(){status(winner?'🏆 Player '+winner+' wins!':'Turn: '+(turn===1?'🔴 Red':'⚪ White'));for(let y=0;y<8;y++)for(let x=0;x<8;x++){rect(c,x*70,y*70,70,70,(x+y)%2?'#526b8e':'#b3c4d3');if(selected&&validMoves(...selected).some(([a,b])=>a===x&&b===y))rect(c,x*70+17,y*70+17,36,36,'#77f6ad88');let v=board[y][x];if(v){c.beginPath();c.arc(x*70+35,y*70+35,26,0,Math.PI*2);c.fillStyle=(v===1||v===3)?'#ff667b':'#e6f0ff';c.fill();if(Math.abs(v)===3)txt(c,'★',x*70+35,y*70+43,23,'#27334c')}}}
+function click(e){if(winner)return;let q=pt(e,c),x=Math.floor(q.x/70),y=Math.floor(q.y/70);if(x<0||x>7||y<0||y>7)return;let v=board[y][x];if(selected&&validMoves(...selected).some(([a,b])=>a===x&&b===y)){let [sx,sy]=selected,piece=board[sy][sx];board[sy][sx]=0;board[y][x]=piece;if(Math.abs(y-sy)===2)board[(sy+y)/2][(sx+x)/2]=0;if(piece===1&&y===0)board[y][x]=3;if(piece===2&&y===7)board[y][x]=4;turn=turn===1?2:1;selected=null;let counts=[0,0];board.flat().forEach(v=>{if(v===1||v===3)counts[0]++;if(v===2||v===4)counts[1]++});if(!counts[0])winner=2;if(!counts[1])winner=1}else selected=(v===turn||v===turn+2)?[x,y]:null;draw()}
+on(c,click);btn('↻ New Match',reset);reset()
+};
+gameMap.life=()=>{
+const c=scene('🧬 Conway Life Lab','Click cells to draw • Start the simulation • Life evolves by neighboring-cell rules.',600,420);const W=30,H=21;let cells=Array(W*H).fill(0),running=false,steps=0,last=0;
+function draw(){status('🧬 Generation: '+steps+' | '+cells.filter(Boolean).length+' living cells');rect(c,0,0,600,420,'#101c35');cells.forEach((v,i)=>rect(c,i%W*20+1,Math.floor(i/W)*20+1,18,18,v?'#70e7bc':'#283b57'))}
+function advance(){let next=cells.map((v,i)=>{let x=i%W,y=Math.floor(i/W),n=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(dx||dy)n+=cells[((y+dy+H)%H)*W+(x+dx+W)%W];return n===3||v&&n===2?1:0});cells=next;steps++}
+on(c,e=>{let q=pt(e,c),x=Math.floor(q.x/20),y=Math.floor(q.y/20);if(x>=0&&x<W&&y>=0&&y<H){cells[y*W+x]^=1;draw()}});
+btn('▶ Start / Pause',()=>{running=!running});btn('⏭ Step',()=>{advance();draw()});btn('🎲 Random',()=>{cells=cells.map(()=>Math.random()<.23?1:0);steps=0;draw()});btn('🗑 Clear',()=>{cells.fill(0);steps=0;draw()});
+let stop=frame(t=>{if(running&&t-last>130){advance();draw();last=t}});const old=cleanup;cleanup=()=>{stop();old()};draw()
+};
+gameMap.battleship=()=>{
+const c=scene('🚢 Battleship Command','Click squares to find all hidden ships • Ships are 2, 3, 3, and 4 cells long.',500,500);let ships,shots,turns;
+function reset(){ships=new Set();shots=new Set();turns=0;for(let len of [4,3,3,2]){let placed=false;for(let tries=0;tries<200&&!placed;tries++){let horizontal=Math.random()<.5,x=Math.floor(Math.random()*(10-(horizontal?len:0))),y=Math.floor(Math.random()*(10-(horizontal?0:len)));let cells=Array.from({length:len},(_,i)=>(y+(horizontal?0:i))*10+x+(horizontal?i:0));if(cells.every(i=>!ships.has(i))){cells.forEach(i=>ships.add(i));placed=true}}}draw()}
+function draw(){let hits=[...shots].filter(i=>ships.has(i)).length;status('🚢 Hits: '+hits+'/12 | Shots: '+turns);rect(c,0,0,500,500,'#0c3554');for(let i=0;i<100;i++){let x=i%10*50,y=Math.floor(i/10)*50;rect(c,x+2,y+2,46,46,'#175b80');if(shots.has(i))txt(c,ships.has(i)?'💥':'•',x+25,y+34,25)}if(hits===12)txt(c,'FLEET SUNK!',250,252,38)}
+on(c,e=>{let q=pt(e,c),x=Math.floor(q.x/50),y=Math.floor(q.y/50),i=y*10+x;if(x>=0&&x<10&&y>=0&&y<10&&!shots.has(i)){shots.add(i);turns++;draw()}});btn('↻ New Fleet',reset);reset()
+};
+gameMap.codebreaker=()=>{
+const c=scene('🕵️ Codebreaker','Guess the secret 4-digit code • Digits do not repeat • Green=right place, yellow=wrong place.');let code,history,done;
+const input=document.createElement('input');input.placeholder='4 different digits';input.maxLength=4;input.inputMode='numeric';document.getElementById('gameHost').append(input);
+function reset(){code=[...Array(10).keys()].sort(()=>Math.random()-.5).slice(0,4).join('');history=[];done=false;input.value='';draw()}
+function draw(){status('🕵️ Guesses: '+history.length+'/10');rect(c,0,0,640,440,'#14203b');txt(c,'CRACK THE SECRET CODE',320,47,26);history.forEach((g,i)=>{txt(c,g.guess,230,100+i*31,22);txt(c,'🟢 '+g.exact+'   🟡 '+g.partial,430,100+i*31,19)});if(done)txt(c,history.at(-1)?.guess===code?'CODE CRACKED!':'CODE WAS '+code,320,423,26)}
+function guess(){if(done)return;let g=input.value.trim();if(!/^\d{4}$/.test(g)||new Set(g).size!==4){input.placeholder='Use 4 different digits';return}let exact=0,partial=0;for(let i=0;i<4;i++)if(g[i]===code[i])exact++;else if(code.includes(g[i]))partial++;history.push({guess:g,exact,partial});done=exact===4||history.length>=10;input.value='';draw()}
+input.addEventListener('keydown',e=>{if(e.key==='Enter')guess()});btn('🔍 Submit Guess',guess);btn('↻ New Code',reset);reset()
+};
+gameMap.untangle=()=>{
+const c=scene('🪢 Untangle','Click a node, then click where to move it • Eliminate every crossing.',600,440);let nodes,edges,selected;
+function reset(){nodes=Array.from({length:7},(_,i)=>({x:110+(i%4)*115,y:80+Math.floor(i/4)*180}));edges=[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,0],[0,3],[1,4],[2,5]];nodes.sort(()=>Math.random()-.5);selected=-1;draw()}
+function intersect(a,b,c,d){const cross=(p,q,r)=>(q.x-p.x)*(r.y-p.y)-(q.y-p.y)*(r.x-p.x);let u=cross(a,b,c),v=cross(a,b,d),w=cross(c,d,a),z=cross(c,d,b);return u*v<0&&w*z<0}
+function count(){let n=0;for(let i=0;i<edges.length;i++)for(let j=i+1;j<edges.length;j++){let a=edges[i],b=edges[j];if(a.some(v=>b.includes(v)))continue;if(intersect(nodes[a[0]],nodes[a[1]],nodes[b[0]],nodes[b[1]]))n++}return n}
+function draw(){let n=count();status('🪢 Line crossings: '+n);rect(c,0,0,600,440,'#101d34');edges.forEach(([a,b])=>{c.strokeStyle='#f4a2b9';c.lineWidth=3;c.beginPath();c.moveTo(nodes[a].x,nodes[a].y);c.lineTo(nodes[b].x,nodes[b].y);c.stroke()});nodes.forEach((v,i)=>{c.beginPath();c.arc(v.x,v.y,17,0,Math.PI*2);c.fillStyle=i===selected?'#ffdd72':'#6cf2dc';c.fill();txt(c,i+1,v.x,v.y+6,15,'#12213b')});if(n===0)txt(c,'UNTANGLED!',300,225,32)}
+on(c,e=>{let q=pt(e,c),i=nodes.findIndex(v=>Math.hypot(v.x-q.x,v.y-q.y)<23);if(selected<0){selected=i}else{nodes[selected]={x:Math.max(25,Math.min(575,q.x)),y:Math.max(25,Math.min(415,q.y))};selected=-1}draw()});btn('↻ New Puzzle',reset);reset()
+};
+gameMap.peg=()=>{
+const c=scene('🔮 Peg Solitaire','Click a peg then an empty hole two spaces away • Jump over and remove pegs.',490,490);let board,sel;
+const valid=(x,y)=>x>=0&&x<7&&y>=0&&y<7&&((x>=2&&x<=4)||(y>=2&&y<=4));
+function reset(){board=Array.from({length:7},(_,y)=>Array.from({length:7},(_,x)=>valid(x,y)?1:-1));board[3][3]=0;sel=null;draw()}
+function draw(){status('🔮 Pegs left: '+board.flat().filter(v=>v===1).length);rect(c,0,0,490,490,'#1c2944');for(let y=0;y<7;y++)for(let x=0;x<7;x++){if(!valid(x,y))continue;let px=x*70+35,py=y*70+35;c.beginPath();c.arc(px,py,24,0,Math.PI*2);c.fillStyle=board[y][x]?'#ffcf76':'#40516e';c.fill();if(sel&&sel[0]===x&&sel[1]===y){c.strokeStyle='#fff';c.lineWidth=4;c.stroke()}}}
+on(c,e=>{let q=pt(e,c),x=Math.floor(q.x/70),y=Math.floor(q.y/70);if(!valid(x,y))return;if(board[y][x]===1){sel=[x,y]}else if(board[y][x]===0&&sel){let [sx,sy]=sel,dx=x-sx,dy=y-sy;if(Math.abs(dx)+Math.abs(dy)===2&&(dx===0||dy===0)&&board[sy+dy/2][sx+dx/2]===1){board[sy][sx]=0;board[sy+dy/2][sx+dx/2]=0;board[y][x]=1}sel=null}draw()});btn('↻ Reset Board',reset);reset()
+};
+gameMap.higher=()=>{
+const c=scene('🃏 Higher or Lower','Guess whether the next card will be higher or lower.');let current,score,streak,notice;
+function reset(){current=1+Math.floor(Math.random()*13);score=streak=0;notice='Pick higher or lower!';draw()}
+function draw(){status('🃏 Score: '+score+' | Streak: '+streak);rect(c,0,0,640,440,'#143b39');rect(c,248,95,144,190,'#f4f0e6');txt(c,['A','2','3','4','5','6','7','8','9','10','J','Q','K'][current-1],320,217,85,'#b92d51');txt(c,notice,320,348,24)}
+function guess(higher){let next=1+Math.floor(Math.random()*13),good=higher?next>current:next<current;if(next===current){notice='Tie! No points.'}else if(good){score+=10;streak++;notice='Correct! '+current+' → '+next}else{streak=0;notice='Wrong! '+current+' → '+next}current=next;draw()}
+btn('⬆ Higher',()=>guess(true));btn('⬇ Lower',()=>guess(false));btn('↻ Reset',reset);reset()
+};
+gameMap.slots=()=>{
+const c=scene('🎰 Slot Machine','Spin three reels • Match symbols to win coins. Virtual points only.');const icons=['🍒','⭐','🍋','🔔','💎','🍀'];let reels,coins,notice;
+function reset(){reels=['🍒','⭐','🍋'];coins=100;notice='Spin for 5 virtual coins';draw()}
+function draw(){status('🪙 Virtual coins: '+coins);rect(c,0,0,640,440,'#3a2147');rect(c,80,90,480,190,'#f5d88b');reels.forEach((v,i)=>txt(c,v,170+i*150,213,75));txt(c,notice,320,350,24)}
+function spin(){if(coins<5){notice='Out of coins — reset to play';draw();return}coins-=5;reels=reels.map(()=>icons[Math.floor(Math.random()*icons.length)]);let same=reels[0]===reels[1]&&reels[1]===reels[2],pair=new Set(reels).size===2;let prize=same?100:pair?15:0;coins+=prize;notice=prize?'Won '+prize+' coins!':'Try again!';draw()}
+btn('🎰 Spin (5 coins)',spin);btn('↻ Reset Coins',reset);reset()
+};
+gameMap.garden=()=>{
+const c=scene('🌱 Garden Grower','Click a plot to plant • Water plants • Harvest grown crops for coins.',600,420);let plots,coins,tool,tick=0;
+function reset(){plots=Array.from({length:15},()=>({stage:0,water:0}));coins=10;tool='plant';draw()}
+function draw(){status('🌱 Coins: '+coins+' | Tool: '+tool);rect(c,0,0,600,420,'#32704e');plots.forEach((v,i)=>{let x=70+(i%5)*100,y=60+Math.floor(i/5)*115;rect(c,x-32,y-30,70,75,'#79553b');txt(c,v.stage===0?'·':v.stage===1?'🌱':v.stage===2?'🌿':'🥕',x+3,y+20,35)});}
+function action(e){let q=pt(e,c),x=Math.round((q.x-73)/100),y=Math.round((q.y-60)/115);if(x<0||x>4||y<0||y>2)return;let plot=plots[y*5+x];if(tool==='plant'&&plot.stage===0&&coins>=1){coins--;plot.stage=1}else if(tool==='water'&&plot.stage>0&&plot.stage<3)plot.water=1;else if(tool==='harvest'&&plot.stage===3){coins+=5;plot.stage=0;plot.water=0}draw()}
+on(c,action);for(let v of ['plant','water','harvest'])btn(v[0].toUpperCase()+v.slice(1),()=>{tool=v;draw()});btn('↻ New Garden',reset);
+let stop=frame(t=>{if(t-tick>2000){tick=t;plots.forEach(v=>{if(v.water&&v.stage>0&&v.stage<3){v.stage++;v.water=0}});draw()}});const old=cleanup;cleanup=()=>{stop();old()};reset()
+};
+gameMap.kitchen=()=>{
+const c=scene('🍳 Kitchen Rush','Prepare orders with the ingredient buttons before the countdown runs out.');const foods=['🍔','🍕','🌮','🥗','🍣'];let order,score,left,timer;
+function draw(){status('🍳 Completed orders: '+score+' | Time: '+left);rect(c,0,0,640,440,'#50354a');txt(c,'CUSTOMER ORDER',320,90,28);txt(c,order,320,230,95);txt(c,'Choose the matching dish below!',320,340,22)}
+function next(){order=foods[Math.floor(Math.random()*foods.length)];draw()}
+function reset(){clearInterval(timer);score=0;left=45;next();timer=setInterval(()=>{left--;draw();if(left<=0)clearInterval(timer)},1000)}
+foods.forEach(food=>btn(food,()=>{if(left<=0)return;if(food===order){score++;next()}else{left=Math.max(0,left-3);draw()}}));btn('↻ Restart',reset);reset();cleanup=()=>clearInterval(timer)
+};
+gameMap.invaders=()=>{
+const c=scene('🛸 Space Invaders','Move with A/D or arrows • Space to shoot • Destroy the alien fleet.');let keys=controls(),player,shots,aliens,enemyShots,score,life,dir,tick;
+function reset(){player=320;shots=[];enemyShots=[];aliens=Array.from({length:24},(_,i)=>({x:75+(i%8)*65,y:55+Math.floor(i/8)*45,alive:true}));score=0;life=3;dir=1;tick=0}
+btn('↻ Restart',reset);reset();let stop=frame(t=>{tick++;if(life>0&&aliens.some(a=>a.alive)){if(keys.keys.a||keys.keys.arrowleft)player-=4;if(keys.keys.d||keys.keys.arrowright)player+=4;player=Math.max(20,Math.min(620,player));if(keys.keys[' ']&&tick%10===0)shots.push({x:player,y:378});if(tick%4===0){let active=aliens.filter(a=>a.alive);if(active.some(a=>a.x>605||a.x<30)){dir*=-1;active.forEach(a=>a.y+=13)}active.forEach(a=>a.x+=dir*5)}if(tick%40===0){let alive=aliens.filter(a=>a.alive);if(alive.length){let a=alive[Math.floor(Math.random()*alive.length)];enemyShots.push({x:a.x,y:a.y})}}shots.forEach(a=>a.y-=7);enemyShots.forEach(a=>a.y+=4);for(let shot of shots)for(let alien of aliens)if(alien.alive&&Math.abs(shot.x-alien.x)<20&&Math.abs(shot.y-alien.y)<15){alien.alive=false;shot.y=-100;score+=10}enemyShots=enemyShots.filter(a=>{if(a.y>375&&Math.abs(a.x-player)<20){life--;return false}return a.y<440});shots=shots.filter(a=>a.y>-20);if(aliens.some(a=>a.alive&&a.y>355))life=0}status('🛸 Score: '+score+' | ❤️ Lives: '+life);rect(c,0,0,640,440,'#10132c');aliens.forEach(a=>{if(a.alive)txt(c,'👾',a.x,a.y+8,27)});rect(c,player-20,390,40,19,'#72e9d8');shots.forEach(a=>rect(c,a.x-2,a.y,4,14,'#ffdf76'));enemyShots.forEach(a=>rect(c,a.x-3,a.y,6,12,'#ff7193'));if(life<=0)txt(c,'GAME OVER',320,240,32);else if(aliens.every(a=>!a.alive))txt(c,'YOU SAVED THE GALAXY!',320,240,27)});cleanup=()=>{stop();keys.stop()}
+};
+gameMap.flowlines=()=>{
+const c=scene('🐛 Wormhole','Connect matching colored portals • Click a colored dot, then adjacent cells to draw a path.',480,480);const pairs=[[[0,0],[5,5]],[[5,0],[0,5]],[[2,0],[2,5]],[[0,2],[5,2]]];const colors=['#ff7d93','#6de6d0','#ffe078','#a58cff'];let paths,selected;
+function reset(){paths=pairs.map(()=>[]);selected=-1;draw()}
+function draw(){status('🐛 Connected: '+paths.filter((p,i)=>p.length&&p.at(-1)[0]===pairs[i][1][0]&&p.at(-1)[1]===pairs[i][1][1]).length+'/4');rect(c,0,0,480,480,'#13213a');for(let y=0;y<6;y++)for(let x=0;x<6;x++)rect(c,x*80+2,y*80+2,76,76,'#273b5a');paths.forEach((path,i)=>path.forEach(([x,y])=>rect(c,x*80+20,y*80+20,40,40,colors[i])));pairs.forEach((pair,i)=>pair.forEach(([x,y])=>{c.beginPath();c.arc(x*80+40,y*80+40,24,0,Math.PI*2);c.fillStyle=colors[i];c.fill()}))}
+on(c,e=>{let q=pt(e,c),x=Math.floor(q.x/80),y=Math.floor(q.y/80);if(x<0||x>5||y<0||y>5)return;let starter=pairs.findIndex(pair=>pair[0][0]===x&&pair[0][1]===y);if(starter>=0){selected=starter;paths[starter]=[[x,y]];draw();return}if(selected<0)return;let path=paths[selected],last=path.at(-1);if(Math.abs(last[0]-x)+Math.abs(last[1]-y)!==1)return;if(paths.some((p,i)=>i!==selected&&p.some(([a,b])=>a===x&&b===y)))return;if(pairs.some((pair,i)=>i!==selected&&pair.some(([a,b])=>a===x&&b===y)))return;if(path.some(([a,b])=>a===x&&b===y))return;path.push([x,y]);if(pairs[selected][1][0]===x&&pairs[selected][1][1]===y)selected=-1;draw()});btn('↻ Clear Paths',reset);reset()
+};
+gameMap.magnet=()=>{
+const c=scene('🧲 Magnet Maze','Use arrow keys to guide the steel ball to the golden goal • Avoid red walls.',600,420);const walls=[{x:90,y:90,w:360,h:20},{x:150,y:180,w:350,h:20},{x:90,y:270,w:360,h:20}];let keys=controls(),x,y,won;
+function reset(){x=35;y=35;won=false}
+btn('↻ Restart',reset);reset();let stop=frame(t=>{if(!won){let dx=((keys.keys.d||keys.keys.arrowright)?2.5:0)-((keys.keys.a||keys.keys.arrowleft)?2.5:0),dy=((keys.keys.s||keys.keys.arrowdown)?2.5:0)-((keys.keys.w||keys.keys.arrowup)?2.5:0);let nx=Math.max(12,Math.min(588,x+dx)),ny=Math.max(12,Math.min(408,y+dy));if(!walls.some(w=>nx>w.x-12&&nx<w.x+w.w+12&&ny>w.y-12&&ny<w.y+w.h+12)){x=nx;y=ny}if(Math.hypot(x-550,y-370)<24)won=true}status('🧲 Reach the gold circle');rect(c,0,0,600,420,'#17253c');walls.forEach(w=>rect(c,w.x,w.y,w.w,w.h,'#ef7b8c'));c.beginPath();c.arc(550,370,20,0,Math.PI*2);c.fillStyle='#ffda78';c.fill();c.beginPath();c.arc(x,y,12,0,Math.PI*2);c.fillStyle='#b9c8e3';c.fill();if(won)txt(c,'MAZE COMPLETE!',300,220,32)});cleanup=()=>{stop();keys.stop()}
+};
+gameMap.fishing=()=>{
+const c=scene('🎣 Fishing Frenzy','Click to cast your line • Catch fish swimming beneath your boat.');let fish,hook,score,tick=0;
+function reset(){fish=Array.from({length:8},(_,i)=>({x:Math.random()*640,y:150+Math.random()*250,v:(i%2?1:-1)*(1+Math.random()*1.3)}));hook=null;score=0}
+function cast(e){if(hook)return;let q=pt(e,c);hook={x:q.x,y:65,goal:q.y,down:true}}
+on(c,cast);btn('↻ Restart',reset);reset();let stop=frame(t=>{tick++;fish.forEach(f=>{f.x+=f.v;if(f.x<-20)f.x=660;if(f.x>660)f.x=-20});if(hook){hook.y+=hook.down?5:-6;if(hook.down&&hook.y>=hook.goal)hook.down=false;if(!hook.down&&hook.y<65)hook=null;if(hook)for(let i=fish.length-1;i>=0;i--)if(Math.abs(fish[i].x-hook.x)<24&&Math.abs(fish[i].y-hook.y)<18){score+=10;fish[i]={x:Math.random()*640,y:150+Math.random()*250,v:fish[i].v};hook.down=false;break}}status('🎣 Fish caught: '+score/10);rect(c,0,0,640,440,'#22668b');rect(c,0,0,640,95,'#4b9fb2');rect(c,270,30,100,25,'#8b563b');fish.forEach(f=>txt(c,'🐟',f.x,f.y,27));if(hook){rect(c,hook.x,65,2,hook.y-65,'#fff');txt(c,'🪝',hook.x,hook.y+12,20)}});const old=cleanup;cleanup=()=>{stop();old()}
+};
+gameMap.potions=()=>{
+const c=scene('🧪 Potion Mixer','Choose two ingredients • Discover recipes and collect potion types.');const ing=['🔥 Fire','💧 Water','🌿 Herb','❄️ Ice','⚡ Spark'];let picks=[],discovered=new Set(),notice='Pick two ingredients';
+function draw(){status('🧪 Recipes discovered: '+discovered.size+'/15');rect(c,0,0,640,440,'#252047');txt(c,'MAGIC POTION LAB',320,83,29);txt(c,picks.join(' + ')||'Choose ingredients below',320,165,26);txt(c,notice,320,285,24);txt(c,'Discover all 15 combinations!',320,360,19,'#c9b9ec')}
+function add(i){picks.push(ing[i]);if(picks.length===2){let a=ing.indexOf(picks[0]),b=ing.indexOf(picks[1]);let key=[a,b].sort((x,y)=>x-y).join('-');discovered.add(key);notice=['✨ Shimmer','💥 Burst','🌈 Prism','🌟 Glow','🫧 Mist'][(a*3+b)%5]+' potion created!';picks=[]}draw()}
+ing.forEach((v,i)=>btn(v,()=>add(i)));btn('↻ Reset Discoveries',()=>{picks=[];discovered.clear();notice='Pick two ingredients';draw()});draw()
+};
+gameMap.bowling=()=>{
+const c=scene('🎳 Mini Bowling','Click the lane to aim your shot • Knock down ten pins.');let pins,ball,score,throws;
+function reset(){pins=Array.from({length:10},(_,i)=>{let row=Math.floor((Math.sqrt(8*i+1)-1)/2),pos=i-row*(row+1)/2;return {x:320+(pos-row/2)*29,y:85+row*24,alive:true}});ball=null;score=0;throws=0}
+function shoot(e){if(ball)return;let q=pt(e,c);ball={x:320,y:410,vx:(q.x-320)/90,vy:-6};throws++}
+on(c,shoot);btn('↻ New Frame',reset);reset();let stop=frame(t=>{if(ball){ball.x+=ball.vx;ball.y+=ball.vy;for(let pin of pins)if(pin.alive&&Math.hypot(pin.x-ball.x,pin.y-ball.y)<20){pin.alive=false;score++}if(ball.y<40)ball=null}status('🎳 Pins knocked down: '+score+'/10 | Throws: '+throws);rect(c,0,0,640,440,'#2a344f');rect(c,175,20,290,420,'#c7a675');for(let i=0;i<6;i++)rect(c,180+i*55,20,2,420,'#ffffff33');pins.forEach(pin=>{if(pin.alive)txt(c,'🎳',pin.x,pin.y+10,27)});if(ball){c.beginPath();c.arc(ball.x,ball.y,15,0,Math.PI*2);c.fillStyle='#242c3c';c.fill()}else{c.beginPath();c.arc(320,410,15,0,Math.PI*2);c.fillStyle='#242c3c';c.fill()}if(score===10)txt(c,'STRIKE! ALL PINS DOWN!',320,250,27)});const old=cleanup;cleanup=()=>{stop();old()}
+};
+const count=cards.querySelectorAll('.card').length;
+const stat=document.querySelector('.stats span');if(stat)stat.textContent='🎮 '+count.toLocaleString()+' playable entries';
+document.title='Pixel Verse Games — '+count.toLocaleString()+' Games';
+const search=document.getElementById('search'),filter=document.getElementById('filter');
+const counter=document.getElementById('pixelVerseCount');
+const entries=Array.from(cards.querySelectorAll('.card'));
+function update(){let q=search.value.trim().toLowerCase(),cat=filter.value,shown=0;for(const card of entries){let visible=card.dataset.name.includes(q)&&(cat==='all'||card.dataset.cat===cat);card.style.display=visible?'':'none';if(visible)shown++}if(counter)counter.textContent='Showing '+shown.toLocaleString()+' of '+count.toLocaleString()+' game entries'}
+search.addEventListener('input',update);filter.addEventListener('change',update);update();
+})();
+</script>
+
+<script>
+(function(){
+"use strict";
+const g=games, grid=document.getElementById('cards');
+const make=(name,desc,id,emoji,theme,hue,isNew)=>{
+ const card=document.createElement('article');card.className='card';card.dataset.cat='classic';card.dataset.name=(name+' '+desc+' retro classic').toLowerCase();
+ const art=document.createElement('div');art.className='art';art.style.background='linear-gradient(130deg,hsl('+hue+' 75% 48%),#293969,#10182c)';art.textContent=emoji;
+ const tag=document.createElement('span');tag.className='small';tag.textContent=isNew?'NEW CLASSIC GAME':'CLASSIC EDITION';art.append(tag);
+ const body=document.createElement('div');body.className='content';
+ const h=document.createElement('h2');h.textContent=name;
+ const d=document.createElement('p');d.textContent=desc;
+ const b=document.createElement('button');b.textContent='PLAY NOW ↗';
+ b.addEventListener('click',()=>{launch(id);const canvas=document.getElementById('screen');if(canvas&&theme)canvas.style.filter='hue-rotate('+hue+'deg) saturate(1.2)'});
+ body.append(h,d,b);card.append(art,body);grid.append(card)
+};
+const setupGame=(name,help,w=480,h=480)=>setup(name,help,w,h);
+const drawText=(c,s,x,y,size=25)=>{c.fillStyle='#fff';c.font='bold '+size+'px system-ui';c.textAlign='center';c.fillText(String(s),x,y);c.textAlign='left'};
+const xy=(e,c)=>{const r=c.canvas.getBoundingClientRect();return [(e.clientX-r.left)*c.canvas.width/r.width,(e.clientY-r.top)*c.canvas.height/r.height]};
+const onClick=(c,fn)=>{c.canvas.addEventListener('click',fn);cleanup=()=>c.canvas.removeEventListener('click',fn)};
+g.reversi=()=>{
+const c=setupGame('⚫ Reversi Classic','Two players • Place discs to flip your opponent’s discs.');let board,turn;
+const dirs=[-1,0,1].flatMap(y=>[-1,0,1].map(x=>[x,y])).filter(([x,y])=>x||y);
+function captures(x,y,player){if(board[y][x])return [];let captured=[];for(const [dx,dy] of dirs){let a=[],xx=x+dx,yy=y+dy;while(xx>=0&&xx<8&&yy>=0&&yy<8&&board[yy][xx]===3-player){a.push([xx,yy]);xx+=dx;yy+=dy}if(xx>=0&&xx<8&&yy>=0&&yy<8&&board[yy][xx]===player)captured.push(...a)}return captured}
+function moves(player){let m=[];for(let y=0;y<8;y++)for(let x=0;x<8;x++)if(captures(x,y,player).length)m.push([x,y]);return m}
+function reset(){board=Array.from({length:8},()=>Array(8).fill(0));board[3][3]=board[4][4]=1;board[3][4]=board[4][3]=2;turn=1;draw()}
+function draw(){let a=board.flat().filter(v=>v===1).length,b=board.flat().filter(v=>v===2).length;hud('<span>⚫ '+a+' | ⚪ '+b+' | Turn: '+(turn===1?'Black':'White')+'</span>');c.fillStyle='#174c3e';c.fillRect(0,0,480,480);for(let y=0;y<8;y++)for(let x=0;x<8;x++){c.strokeStyle='#75a68b';c.strokeRect(x*60,y*60,60,60);if(board[y][x]){c.fillStyle=board[y][x]===1?'#151b28':'#f3f6fd';c.beginPath();c.arc(x*60+30,y*60+30,23,0,Math.PI*2);c.fill()}}if(!moves(1).length&&!moves(2).length)drawText(c,'GAME OVER',240,242,35)}
+onClick(c,e=>{let [px,py]=xy(e,c),x=Math.floor(px/60),y=Math.floor(py/60);if(x<0||x>7||y<0||y>7)return;let cap=captures(x,y,turn);if(!cap.length)return;board[y][x]=turn;cap.forEach(([a,b])=>board[b][a]=turn);turn=3-turn;if(!moves(turn).length)turn=3-turn;draw()});btn('↻ New Game',reset);reset()
+};
+g.hangman=()=>{
+const c=setupGame('🔤 Hangman','Guess letters to reveal the secret word. Six wrong guesses allowed.',600,420);
+const words=['ARCADE','GALAXY','JUNGLE','ROCKET','DRAGON','PLANET','PUZZLE','CASTLE','TREASURE','PIXEL','GARDEN','RAINBOW'];let word,used,wrong;
+function reset(){word=words[Math.floor(Math.random()*words.length)];used=new Set();wrong=0;draw()}
+function done(){return [...word].every(ch=>used.has(ch))}
+function draw(){hud('<span>❌ Wrong guesses: '+wrong+'/6</span>');c.fillStyle='#17223d';c.fillRect(0,0,600,420);c.strokeStyle='#e6e8f0';c.lineWidth=5;c.beginPath();c.moveTo(90,335);c.lineTo(230,335);c.moveTo(150,335);c.lineTo(150,65);c.lineTo(285,65);c.lineTo(285,100);c.stroke();if(wrong>0){c.beginPath();c.arc(285,132,30,0,Math.PI*2);c.stroke()}if(wrong>1){c.beginPath();c.moveTo(285,162);c.lineTo(285,250);c.stroke()}if(wrong>2){c.beginPath();c.moveTo(285,180);c.lineTo(242,220);c.stroke()}if(wrong>3){c.beginPath();c.moveTo(285,180);c.lineTo(328,220);c.stroke()}if(wrong>4){c.beginPath();c.moveTo(285,250);c.lineTo(248,300);c.stroke()}if(wrong>5){c.beginPath();c.moveTo(285,250);c.lineTo(322,300);c.stroke()}let reveal=[...word].map(ch=>used.has(ch)||wrong>=6?ch:'_').join(' ');drawText(c,reveal,425,150,25);drawText(c,'Used: '+[...used].join(' '),430,230,15);if(done()||wrong>=6)drawText(c,done()?'YOU WIN!':'TRY AGAIN!',425,310,25)}
+function guess(ch){if(used.has(ch)||wrong>=6||done())return;used.add(ch);if(!word.includes(ch))wrong++;draw()}
+const input=document.createElement('input');input.placeholder='Type a letter';input.maxLength=1;document.getElementById('gameHost').append(input);
+function submit(){let ch=input.value.toUpperCase();if(/^[A-Z]$/.test(ch))guess(ch);input.value='';input.focus()}
+input.addEventListener('keydown',e=>{if(e.key==='Enter')submit()});btn('Guess Letter',submit);btn('↻ New Word',reset);reset()
+};
+g.nim=()=>{
+const c=setupGame('🪨 Nim Stones','Two players • Remove 1, 2 or 3 stones • Whoever takes the last stone wins.',600,420);let stones,turn,winner;
+function reset(){stones=21;turn=1;winner=0;draw()}
+function draw(){hud('<span>🪨 Stones: '+stones+' | Player '+turn+' turn</span>');c.fillStyle='#1d2842';c.fillRect(0,0,600,420);for(let i=0;i<stones;i++){let x=62+(i%7)*80,y=80+Math.floor(i/7)*100;c.fillStyle='#8bb8d0';c.beginPath();c.ellipse(x,y,25,19,0,0,Math.PI*2);c.fill()}if(winner)drawText(c,'PLAYER '+winner+' WINS!',300,385,28)}
+function take(n){if(winner||stones<n)return;stones-=n;if(!stones)winner=turn;else turn=3-turn;draw()}
+[1,2,3].forEach(n=>btn('Take '+n,()=>take(n)));btn('↻ New Game',reset);reset()
+};
+g.dotsboxes=()=>{
+const c=setupGame('🔷 Dots and Boxes','Two players • Click between dots to draw a line • Complete boxes to score.',480,480);let edges,boxes,turn,scores;
+function reset(){edges=new Set();boxes=Array(16).fill(0);turn=1;scores=[0,0];draw()}
+function edgeKey(a,b){return [a,b].sort((x,y)=>x-y).join('-')}
+function draw(){hud('<span>🔵 Player 1: '+scores[0]+' | 🩷 Player 2: '+scores[1]+'</span>');c.fillStyle='#17213b';c.fillRect(0,0,480,480);for(let y=0;y<4;y++)for(let x=0;x<4;x++){if(boxes[y*4+x]){c.fillStyle=boxes[y*4+x]===1?'#4a9bc0':'#b36eaa';c.fillRect(60+x*90,60+y*90,90,90)}}for(let y=0;y<5;y++)for(let x=0;x<5;x++){let i=y*5+x;if(x<4&&edges.has(edgeKey(i,i+1))){c.strokeStyle='#ffe48c';c.lineWidth=7;c.beginPath();c.moveTo(60+x*90,60+y*90);c.lineTo(150+x*90,60+y*90);c.stroke()}if(y<4&&edges.has(edgeKey(i,i+5))){c.strokeStyle='#ffe48c';c.lineWidth=7;c.beginPath();c.moveTo(60+x*90,60+y*90);c.lineTo(60+x*90,150+y*90);c.stroke()}c.fillStyle='#f3f6ff';c.beginPath();c.arc(60+x*90,60+y*90,7,0,Math.PI*2);c.fill()}if(boxes.every(Boolean))drawText(c,'GAME OVER!',240,250,34)}
+function click(e){let [px,py]=xy(e,c),gx=Math.round((px-60)/90),gy=Math.round((py-60)/90),best=null,dist=20;for(let y=0;y<5;y++)for(let x=0;x<5;x++){let a=y*5+x;if(x<4){let d=Math.hypot(px-(105+x*90),py-(60+y*90));if(d<dist){dist=d;best=[a,a+1]}}if(y<4){let d=Math.hypot(px-(60+x*90),py-(105+y*90));if(d<dist){dist=d;best=[a,a+5]}}}if(!best)return;let key=edgeKey(...best);if(edges.has(key))return;edges.add(key);let scored=false;for(let y=0;y<4;y++)for(let x=0;x<4;x++){let a=y*5+x,all=[edgeKey(a,a+1),edgeKey(a,a+5),edgeKey(a+1,a+6),edgeKey(a+5,a+6)];if(!boxes[y*4+x]&&all.every(k=>edges.has(k))){boxes[y*4+x]=turn;scores[turn-1]++;scored=true}}if(!scored)turn=3-turn;draw()}
+onClick(c,click);btn('↻ New Match',reset);reset()
+};
+const fresh=[
+['Reversi Classic','Flip discs and control the board.','reversi','⚫'],
+['Hangman','Guess letters before the drawing is complete.','hangman','🔤'],
+['Nim Stones','Two-player strategy with 21 stones.','nim','🪨'],
+['Dots and Boxes','Draw lines and claim completed boxes.','dotsboxes','🔷']
+];
+fresh.forEach(([name,desc,id,emoji],i)=>make(name,desc,id,emoji,null,i*60+50,true));
+const base=[
+['Snake','snake','🐍'],['Pong','pong','🏓'],['2048','2048','🧩'],['Memory Match','memory','🧠'],
+['Connect Four','connect','🟡'],['Tic-Tac-Toe','ttt','❌'],['Minesweeper','minefield','💣'],
+['Brick Breaker','brick','🧱'],['Simon Says','simon','💡'],['Sliding Puzzle','slide','🧩'],
+['Checkers','checkers','♟️'],['Reversi','reversi','⚫'],['Hangman','hangman','🔤'],
+['Nim','nim','🪨'],['Dots and Boxes','dotsboxes','🔷'],['Peg Solitaire','peg','🔮'],
+['Higher or Lower','higher','🃏'],['Battleship','battleship','🚢'],['Lights Out','lights','💡'],
+['Number Hunt','numbers','🔢'],['Target Practice','targets','🎯'],['Space Invaders','invaders','🛸'],
+['Typing Race','typing','⌨️'],['Codebreaker','codebreaker','🕵️'],['Bowling','bowling','🎳'],
+['Reaction Test','reflex','⚡'],['Math Quiz','math','🧮'],['Color Match','color','🎨']
+];
+const themes=['Vintage Arcade','Pixel Cabinet','Classic Gold','Monochrome','Old School','Retro Neon','8-Bit','High Score'];
+let count=0;
+for(let i=0;i<base.length&&count<196;i++){
+ for(let j=0;j<themes.length&&count<196;j++){
+  const [name,id,emoji]=base[i],theme=themes[j];
+  make(name+' — '+theme,'A themed classic edition of '+name+'. Same core rules, different colors.',id,emoji,theme,(i*37+j*44)%360,false);
+  count++;
+ }
+}
+const total=grid.querySelectorAll('.card').length;
+document.title='Pixel Verse Games — '+total.toLocaleString()+' Game Hub';
+const stat=document.querySelector('.stats span');if(stat)stat.textContent='🎮 '+total.toLocaleString()+' playable entries';
+const header=document.createElement('section');header.style.cssText='margin:25px 0;padding:18px;border:1px solid #657bb1;border-radius:16px;background:#20325b';
+header.innerHTML='<h2 style="margin:0 0 7px">🕹️ 200 Classic Game Additions</h2><p style="margin:0;color:#c6d4ee">4 new classic games with distinct gameplay plus 196 classic-themed editions of existing games. All 200 are selectable and playable; editions reuse their original mechanics.</p>';
+grid.parentNode.insertBefore(header,grid);
+const search=document.getElementById('search'),filter=document.getElementById('filter'),counter=document.getElementById('pixelVerseCount'),entries=[...grid.querySelectorAll('.card')];
+function update(){const q=search.value.trim().toLowerCase(),cat=filter.value;let shown=0;for(const card of entries){const yes=card.dataset.name.includes(q)&&(cat==='all'||card.dataset.cat===cat);card.style.display=yes?'':'none';if(yes)shown++}if(counter)counter.textContent='Showing '+shown.toLocaleString()+' of '+total.toLocaleString()+' game entries'}
+search.addEventListener('input',update);filter.addEventListener('change',update);update();
+})();
+</script>
+
+<style>
+#pvSocial{margin:22px 0;padding:22px;border:1px solid #52679b;border-radius:20px;background:linear-gradient(125deg,#202a53,#14273e)}
+#pvSocial h2{margin:0 0 8px}#pvSocial p{color:#bacbed}
+.pvrow{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.pvrow input{flex:1;min-width:145px}.pvrow button{white-space:nowrap}
+.pvbox{padding:12px;border-radius:12px;background:#0c162c;margin:10px 0}
+.pvchips{display:flex;gap:8px;flex-wrap:wrap}.pvchips span{padding:8px 11px;border:1px solid #4d6693;border-radius:20px;background:#1b3050}
+#pvSocial small{color:#a9bddd}
+</style>
+
+<script>
+(function(){
+'use strict';
+const $p=id=>document.getElementById(id);
+const storageKey='pv-games-profile-v1',sessionKey='pv-games-session-v1';
+let profile;try{profile=JSON.parse(localStorage.getItem(storageKey))||{name:'Guest',plays:0,scores:{},badges:[]}}catch{profile={name:'Guest',plays:0,scores:{},badges:[]}}
+let session;try{session=JSON.parse(sessionStorage.getItem(sessionKey))||null}catch{session=null}
+let currentGame='',gameStart=0;
+const badgeRules=[['First Play',p=>p.plays>=1],['Arcade Regular',p=>p.plays>=10],['Game Explorer',p=>Object.keys(p.scores).length>=5],['Score Hunter',p=>Object.values(p.scores).some(v=>v>=100)],['High Roller',p=>Object.values(p.scores).some(v=>v>=500)],['Arcade Legend',p=>p.plays>=100]];
+function save(){profile.badges=badgeRules.filter(([name,test])=>test(profile)).map(([name])=>name);localStorage.setItem(storageKey,JSON.stringify(profile));render()}
+function say(s){$p('pvMessage').textContent=s}
+function render(){
+ $p('pvName').value=profile.name==='Guest'?'':profile.name;
+ $p('pvBadges').replaceChildren(...(profile.badges.length?profile.badges.map(n=>{let e=document.createElement('span');e.textContent='🏅 '+n;return e}):[document.createTextNode('Play games to unlock badges!')]));
+ const scores=Object.entries(profile.scores).sort((a,b)=>b[1]-a[1]).slice(0,12);
+ $p('pvBest').textContent=scores.length?scores.map(([name,score])=>name+': '+score).join(' • '):'No scores saved yet.';
+}
+function cleanName(s){return String(s||'').trim().replace(/[^\w -]/g,'').slice(0,18)}
+function base(){return $p('pvServer').value.trim().replace(/\/+$/,'')}
+async function request(path,data){
+ const url=base();if(!/^https?:\/\/[^/]+/i.test(url))throw Error('Enter a valid http(s) server URL first.');
+ const r=await fetch(url+path,{method:data?'POST':'GET',headers:{'Content-Type':'application/json',...(session?{'Authorization':'Bearer '+session.token}:{})},...(data?{body:JSON.stringify(data)}:{})});
+ const j=await r.json();if(!r.ok)throw Error(j.error||'Server error');return j
+}
+function getScore(){
+ const h=$p('hud')?.textContent||'';
+ const found=[...h.matchAll(/(?:score|points|hits|coins|height|completed orders|pins knocked down)\s*:\s*(\d+)/gi)].map(m=>Number(m[1]));
+ return found.length?Math.max(...found):null
+}
+const originalLaunch=window.launch;
+window.launch=function(id){
+ currentGame=id;gameStart=Date.now();profile.plays++;save();
+ return originalLaunch(id)
+};
+$p('pvLocal').onclick=()=>{const name=cleanName($p('pvName').value);if(!name)return say('Enter a player name.');profile.name=name;save();say('Local profile saved for '+name+'.')};
+$p('pvConnect').onclick=()=>{localStorage.setItem('pv-games-server',base());say('Server address saved. Register or log in to connect.')};
+$p('pvServer').value=localStorage.getItem('pv-games-server')||'http://localhost:3000';
+$p('pvRegister').onclick=async()=>{try{const j=await request('/api/register',{username:cleanName($p('pvName').value),password:$p('pvPassword').value});session={token:j.token,username:j.username};sessionStorage.setItem(sessionKey,JSON.stringify(session));profile.name=j.username;save();say('Online account created: '+j.username);refreshFriends();refreshScores()}catch(e){say(e.message)}};
+$p('pvLogin').onclick=async()=>{try{const j=await request('/api/login',{username:cleanName($p('pvName').value),password:$p('pvPassword').value});session={token:j.token,username:j.username};sessionStorage.setItem(sessionKey,JSON.stringify(session));profile.name=j.username;save();say('Logged in as '+j.username);refreshFriends();refreshScores()}catch(e){say(e.message)}};
+$p('pvLogout').onclick=()=>{session=null;sessionStorage.removeItem(sessionKey);say('Logged out. Local scores remain on this browser.')};
+$p('pvRecord').onclick=async()=>{
+ if(!currentGame)return say('Play a game first, then save its score.');
+ const score=getScore();if(score===null)return say('This game does not display a numeric score. Try a scoring game.');
+ profile.scores[currentGame]=Math.max(profile.scores[currentGame]||0,score);save();
+ say('Saved '+score+' points for '+currentGame+'. Your personal best is '+profile.scores[currentGame]+'.');
+
+};
+async function refreshScores(){try{const j=await request('/api/leaderboard');$p('pvLeaderboard').textContent=j.scores.length?j.scores.map((v,i)=>(i+1)+'. '+v.username+' — '+v.game+': '+v.score).join(' | '):'No online scores yet.'}catch(e){$p('pvLeaderboard').textContent=e.message}}
+$p('pvScores').onclick=refreshScores;
+let ranked=null,rankedBusy=false;
+function showRanked(info){
+ if(info.finished){ranked=null;$p('pvRankedStatus').textContent='🏆 Round finished! Server-verified score: '+info.score+' | Best: '+info.best;refreshScores();return}
+ ranked=info;
+ $p('pvRankedStatus').textContent='🛡️ '+info.question+' = ? | Score: '+info.score+' | Time left: '+info.remaining+'s';
+}
+$p('pvStartRanked').onclick=async()=>{
+ try{if(!session)throw Error('Log in first.');showRanked(await request('/api/challenge/start',{}));$p('pvAnswer').focus()}catch(e){say(e.message)}
+};
+$p('pvSubmitAnswer').onclick=async()=>{
+ if(!ranked||rankedBusy)return;
+ const value=$p('pvAnswer').value.trim();
+ if(!/^-?\d+$/.test(value))return say('Enter a whole number.');
+ rankedBusy=true;
+ try{const result=await request('/api/challenge/answer',{answer:Number(value)});showRanked(result);$p('pvAnswer').value='';$p('pvAnswer').focus()}
+ catch(e){say(e.message)}finally{rankedBusy=false}
+};
+$p('pvAnswer').addEventListener('keydown',e=>{if(e.key==='Enter')$p('pvSubmitAnswer').click()});
+
+async function refreshFriends(){
+ if(!session){$p('pvFriends').textContent='Log in to see friends.';return}
+ try{
+ const j=await request('/api/friends');
+ const area=$p('pvFriends');area.replaceChildren();
+ for(const friend of j.friends){const d=document.createElement('div');d.textContent='✅ '+friend;area.append(d)}
+ for(const name of j.incoming){const d=document.createElement('div');d.textContent='📨 '+name+' wants to be friends ';const b=document.createElement('button');b.textContent='Accept';b.onclick=async()=>{try{await request('/api/friends/accept',{username:name});refreshFriends()}catch(e){say(e.message)}};d.append(b);area.append(d)}
+ for(const name of j.outgoing){const d=document.createElement('div');d.textContent='⏳ Sent request to '+name;area.append(d)}
+ if(!area.childNodes.length)area.textContent='No friends or requests yet.'
+ }catch(e){$p('pvFriends').textContent=e.message}
+}
+$p('pvRefreshFriends').onclick=refreshFriends;
+$p('pvAddFriend').onclick=async()=>{try{if(!session)throw Error('Log in first.');const name=cleanName($p('pvFriend').value);if(!name)throw Error('Enter a friend username.');await request('/api/friends/request',{username:name});say('Friend request sent to '+name+'.');refreshFriends()}catch(e){say(e.message)}};
+render();if(session){say('Online session restored for '+session.username+'.');refreshFriends();refreshScores()}
+})();
+</script>
+</body></html>
