@@ -1,8 +1,8 @@
+const fs=require('fs');
+const path=require('path');
 const WebSocket=require('ws');
 const http=require('http');
 const crypto=require('crypto');
-const fs=require('fs');
-const path=require('path');
 const DATA_FILE=process.env.PV_DATA_FILE||path.join(__dirname,'accounts.json');
 let db={users:{},scores:{}};
 try{db=JSON.parse(fs.readFileSync(DATA_FILE,'utf8'))}catch{}
