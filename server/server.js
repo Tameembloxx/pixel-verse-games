@@ -105,7 +105,7 @@ async function api(req,res){
  return reply(res,404,{error:'Unknown action'})
 }
 
-const server=http.createServer((req,res)=>{if(req.url.startsWith('/api/')){api(req,res).catch(()=>reply(res,500,{error:'Server error'}));return}res.writeHead(200,{'Content-Type':'text/html'});fs.createReadStream(path.join(__dirname,'../index.html')).pipe(res)
+const server=http.createServer((req,res)=>{if(req.url.startsWith('/api/')){api(req,res).catch(()=>reply(res,500,{error:'Server error'}));return}res.writeHead(200,{'Content-Type':'text/html'});fs.createReadStream(path.join(__dirname,'../index.html')).pipe(res)});
 const wss=new WebSocket.Server({server});
                                            const rooms=new Map();
 function send(ws,msg){if(ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify(msg))}
